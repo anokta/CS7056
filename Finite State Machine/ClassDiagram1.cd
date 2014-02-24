@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Font Name="Segoe UI" Size="9" />
+  <Class Name="FiniteStateMachine.Agent">
+    <Position X="1.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Agent.cs</FileName>
+      <HashCode>AAQAAABAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.AgentManager">
+    <Position X="6.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>AgentManager.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAgAAAFAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.Game1">
+    <Position X="10" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Game1.cs</FileName>
+      <HashCode>AAQAEEAABAAAAwAAACAAAAAAAAIAAAgAAAAAAAAAAAQ=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.Message">
+    <Position X="15.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Messages.cs</FileName>
+      <HashCode>AAAAAAAAIQAAAAgAACAAAAAIAAAAgAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.Miner">
+    <Position X="0.5" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Miner.cs</FileName>
+      <HashCode>gAQiBIBABgyggAAAgAABAAACAAAAgAAAAABAAAAAAnQ=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.EnterMineAndDigForNugget">
+    <Position X="15" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>MinerStates.cs</FileName>
+      <HashCode>AAAAAAAAQAAAAAQAAAAAAAAAAAAEAAAAIAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.VisitBankAndDepositGold">
+    <Position X="21.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>MinerStates.cs</FileName>
+      <HashCode>AAAAAAAAQAAAAAQAAAAAAAAAAAAEAAAAIAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.GoHomeAndSleepTillRested">
+    <Position X="1.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>MinerStates.cs</FileName>
+      <HashCode>AAAAAAAAQAAAAAQAAAAAAAAAAAAEAAAAIAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.QuenchThirst">
+    <Position X="6" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>MinerStates.cs</FileName>
+      <HashCode>AAAAAAAAQAAAAAQAAAAAAAAAAAAEAAAAIAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.EatStew">
+    <Position X="10.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>MinerStates.cs</FileName>
+      <HashCode>AAAAAAAAQAAAAAQAAAAAAAAAAAAEAAAAIAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.MinerGlobalState">
+    <Position X="17.25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>MinerStates.cs</FileName>
+      <HashCode>AAAAAAAAQAAAAAQAAAAAAAAAAAAEAAAAIAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.MinersWife">
+    <Position X="2.75" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>MinersWife.cs</FileName>
+      <HashCode>gAQCAIBAAACAAAAAAAAAAAACAAAAAAAAAAAAAIAAAhA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.DoHouseWork">
+    <Position X="3.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>MinersWifeStates.cs</FileName>
+      <HashCode>AAAAAIAAQAAAAAQAAAAAAAAAAAAEAAAAIAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.VisitBathroom">
+    <Position X="8.25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>MinersWifeStates.cs</FileName>
+      <HashCode>AAAAAAAAQAAAAAQAAAAAAAAAAAAEAAAAIAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.CookStew">
+    <Position X="12.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>MinersWifeStates.cs</FileName>
+      <HashCode>AAAAAAAAQAAAAAQAAAAAAAAAAAAEAAAAIAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.WifesGlobalState">
+    <Position X="19.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>MinersWifeStates.cs</FileName>
+      <HashCode>AAAAAIAAQAAAAAQAAAAAAAAAAAAEAAAAIAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.Printer">
+    <Position X="8.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Printer.cs</FileName>
+      <HashCode>AAAAEAAAAAAAAgAAAAAIAAgBAAEAgAAAAAAAAAAEAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.Program">
+    <Position X="12" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Program.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.State&lt;T&gt;">
+    <Position X="11.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>State.cs</FileName>
+      <HashCode>AAAAAAAAQAAAAAQAAAAAAAAAAAAEAAAAIAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FiniteStateMachine.StateMachine&lt;T&gt;">
+    <Position X="17.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>StateMachine.cs</FileName>
+      <HashCode>AAQAEABAAJAAhAAAIAAAACAAAAAIAAAACAAAAQAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="FiniteStateMachine.Telegram">
+    <Position X="13.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Messages.cs</FileName>
+      <HashCode>AAAAAAwAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAIAAA=</HashCode>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="FiniteStateMachine.MessageType">
+    <Position X="19.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Messages.cs</FileName>
+      <HashCode>AAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="FiniteStateMachine.Location">
+    <Position X="22" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Miner.cs</FileName>
+      <HashCode>AAAAAAEAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAQA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+</ClassDiagram>
