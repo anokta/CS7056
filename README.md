@@ -1,4 +1,4 @@
 CS7056
 ======
 
-Automated Agents
+MSc. IET - Automated Agents
