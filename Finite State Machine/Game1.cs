@@ -29,9 +29,14 @@ namespace FiniteStateMachine
         private Texture2D shuttle;
         private Texture2D earth;
 
+        private TileMap map;
+        private Texture2D tiles;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = 1024;
+            graphics.PreferredBackBufferHeight = 768;
             Content.RootDirectory = "Content";
 
             this.IsFixedTimeStep = true;
@@ -49,6 +54,8 @@ namespace FiniteStateMachine
             // Here's a little hack: The Miner and MinersWife must know each other's id in
             // order to communicate.  We calculate them inside each agent based on their
             // creation order, so the pair must always be created in this sequence.
+            map = new TileMap();
+
             Bob = new Miner();
             Elsa = new MinersWife();
             Jesse = new Outlaw();
@@ -78,6 +85,9 @@ namespace FiniteStateMachine
             background = Content.Load<Texture2D>("Sprites/stars"); // change these names to the names of your images
             shuttle = Content.Load<Texture2D>("Sprites/shuttle");  // if you are using your own images.
             earth = Content.Load<Texture2D>("Sprites/earth");
+
+            tiles = Content.Load<Texture2D>("Sprites/largetileset");
+            map.SetContent(tiles, Content.Load<Texture2D>("Sprites/overlay"));
         }
 
         /// <summary>
@@ -116,7 +126,9 @@ namespace FiniteStateMachine
             Message.SendDelayedMessages();
             base.Update(gameTime);
 
-            Printer.PrintMessageData("\n"); // Console.WriteLine("\n");
+            //Printer.PrintMessageData("\n"); // Console.WriteLine("\n");
+
+            Console.WriteLine("\n");
         }
 
         /// <summary>
@@ -127,14 +139,14 @@ namespace FiniteStateMachine
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            int screenWidth = GraphicsDevice.Viewport.Width;
+            int screenHeight = GraphicsDevice.Viewport.Height;
+            Vector2 screenOffset = new Vector2(screenWidth / 2, screenHeight / 2);
 
-            spriteBatch.Begin();
+            map.Draw(spriteBatch, screenOffset);
 
-            spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
 
-            spriteBatch.End();
-
-            Printer.Draw(spriteBatch, spriteFont);
+           // Printer.Draw(spriteBatch, spriteFont);
 
 
             base.Draw(gameTime);

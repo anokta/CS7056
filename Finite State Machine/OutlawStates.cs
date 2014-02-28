@@ -19,7 +19,7 @@ namespace FiniteStateMachine
 
         public override void Execute(Outlaw outlaw)
         {
-            Printer.Print(outlaw.Id, "Chilling in " + LocationName.ToString(outlaw.Location) + ".");
+            Printer.Print(outlaw.Id, "Chilling in " + LocationPropertes.ToString(outlaw.Location) + ".");
 
             if (outlaw.Bored())
             {
@@ -100,6 +100,32 @@ namespace FiniteStateMachine
         }
     }
 
+    public class DropDeadOutlaw : State<Outlaw>
+    {
+
+        public override void Enter(Outlaw outlaw)
+        {
+            Printer.Print(outlaw.Id, "I will come back, from dead!");
+            outlaw.IsDead = true;
+        }
+
+        public override void Execute(Outlaw outlaw)
+        {
+        }
+
+        public override void Exit(Outlaw outlaw)
+        {
+            outlaw.IsDead = false;
+            outlaw.Location = Location.outlawCamp;
+            Printer.Print(outlaw.Id, "I am back, from dead!");
+        }
+
+        public override bool OnMesssage(Outlaw agent, Telegram telegram)
+        {
+            return false;
+        }
+    }
+
     // If the agent has a global state, then it is executed every Update() cycle
     public class OutlawGlobalState : State<Outlaw>
     {
@@ -111,7 +137,7 @@ namespace FiniteStateMachine
 
         public override void Execute(Outlaw outlaw)
         {
-            if (rand.Next(20) == 1)
+            if (rand.Next(20) == 1 && !outlaw.StateMachine.IsInState(new AttemptToRobBank()))
             {
                 outlaw.StateMachine.ChangeState(new AttemptToRobBank());
             }
@@ -131,15 +157,10 @@ namespace FiniteStateMachine
                     Message.DispatchMessage(0, outlaw.Id, telegram.Sender, MessageType.Gunfight);
                     return true;
                 case MessageType.Dead:
-                    Printer.Print(outlaw.Id, "I will come back, from dead!");
-                    outlaw.IsDead = true;
-                    outlaw.StateMachine.CurrentState = null;
+                    outlaw.StateMachine.ChangeState(new DropDeadOutlaw());
                     return true;
                 case MessageType.Respawn:
-                    Printer.Print(outlaw.Id, "I am back, from dead!");
-                    outlaw.Location = Location.outlawCamp;
-                    outlaw.IsDead = false;
-                    outlaw.StateMachine.CurrentState = new LurkInOutlawCamp();
+                    outlaw.StateMachine.ChangeState(new LurkInOutlawCamp());
                     return true;
             }
             return false;

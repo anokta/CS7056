@@ -2,24 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace FiniteStateMachine
 {
     // Here is the list of locations that agents can visit
     public enum Location
     {
-        shack,
-        goldMine,
-        bank,
-        saloon,
-        outlawCamp, 
-        sheriffsOffice, 
-        undertakers,
-        cemetery 
+        shack = 0,
+        goldMine = 1,
+        bank = 2,
+        saloon = 3,
+        outlawCamp = 4, 
+        sheriffsOffice = 5, 
+        undertakers = 6,
+        cemetery = 7 
     }
 
-    public class LocationName
+    public class LocationPropertes
     {
+        public static Vector2[] LocationCoords = new Vector2[Enum.GetValues(typeof(Location)).Length];
+
         public static String ToString(Location location)
         {
             switch (location)

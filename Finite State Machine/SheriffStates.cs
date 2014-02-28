@@ -15,7 +15,7 @@ namespace FiniteStateMachine
             while (nextLocation == Location.outlawCamp || nextLocation == sheriff.Location)
                 nextLocation = (Location)rand.Next(Enum.GetNames(typeof(Location)).Length);
 
-            Printer.Print(sheriff.Id, "Going to " + LocationName.ToString(nextLocation) + "!");
+            Printer.Print(sheriff.Id, "Going to " + LocationPropertes.ToString(nextLocation) + "!");
             sheriff.Location = nextLocation;
 
             sheriff.OutlawSpotted = false;
@@ -23,7 +23,7 @@ namespace FiniteStateMachine
 
         public override void Execute(Sheriff sheriff)
         {
-            Printer.Print(sheriff.Id, "Patrolling in " + LocationName.ToString(sheriff.Location) + ".");
+            Printer.Print(sheriff.Id, "Patrolling in " + LocationPropertes.ToString(sheriff.Location) + ".");
 
             for (int i = 0; i < Agent.AgentsCount; ++i)
             {
@@ -53,7 +53,7 @@ namespace FiniteStateMachine
 
         public override void Exit(Sheriff sheriff)
         {
-            Printer.Print(sheriff.Id, "Leaving " + LocationName.ToString(sheriff.Location) + ".");
+            Printer.Print(sheriff.Id, "Leaving " + LocationPropertes.ToString(sheriff.Location) + ".");
         }
 
         public override bool OnMesssage(Sheriff agent, Telegram telegram)
@@ -118,6 +118,32 @@ namespace FiniteStateMachine
         }
     }
 
+
+    public class DropDeadSheriff : State<Sheriff>
+    {
+        public override void Enter(Sheriff sheriff)
+        {
+            Printer.Print(sheriff.Id, "Goodbye, cruel world!");
+            sheriff.IsDead = true;
+        }
+
+        public override void Execute(Sheriff sheriff)
+        {
+        }
+
+        public override void Exit(Sheriff sheriff)
+        {
+            sheriff.IsDead = false;
+            sheriff.Location = Location.sheriffsOffice;
+            Printer.Print(sheriff.Id, "It's a miracle, I am alive!");
+        }
+
+        public override bool OnMesssage(Sheriff agent, Telegram telegram)
+        {
+            return false;
+        }
+    }
+
     // If the agent has a global state, then it is executed every Update() cycle
     public class SheriffGlobalState : State<Sheriff>
     {
@@ -150,7 +176,6 @@ namespace FiniteStateMachine
 
                     if (rand.Next(10) == 1) // sheriff dies
                     {
-                        Printer.Print(sheriff.Id, "Goodbye, cruel world!");
 
                         outlaw.GoldCarrying += sheriff.GoldCarrying;
                         sheriff.GoldCarrying = 0;
@@ -171,15 +196,10 @@ namespace FiniteStateMachine
 
                     return true;
                 case MessageType.Dead:
-                    sheriff.IsDead = true;
-                    sheriff.StateMachine.CurrentState = null;
+                    sheriff.StateMachine.ChangeState(new DropDeadSheriff());
                     return true;
                 case MessageType.Respawn:
-                    Printer.Print(sheriff.Id, "It's a miracle, I am alive!");
-                    sheriff.Location = Location.sheriffsOffice;
-                    sheriff.IsDead = false;
-                    sheriff.OutlawSpotted = false;
-                    sheriff.StateMachine.CurrentState = new PatrolRandomLocation();
+                    sheriff.StateMachine.ChangeState(new PatrolRandomLocation());
                     return true;
                 default:
                     return false;

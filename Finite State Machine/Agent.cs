@@ -39,7 +39,14 @@ namespace FiniteStateMachine
         public Location Location
         {
             get { return location; }
-            set { location = value; }
+            set { location = value; position = LocationPropertes.LocationCoords[(int)location]; }
+        }
+
+        private Vector2 position;
+        public Vector2 CurrentPosition
+        {
+            get { return position; }
+            set { position = value; }
         }
 
         // It also knows how much gold it's carrying
@@ -50,9 +57,17 @@ namespace FiniteStateMachine
             set { goldCarrying = value; }
         }
 
-        public Agent()
+        //private Texture2D sprite;
+        //public Texture2D Sprite
+        //{
+        //    get { return sprite; }
+        //    set { sprite = value; }
+        //}
+
+        public Agent()//Texture2D sprite)
         {
             id = agents++;
+           // this.sprite = sprite;
         }
 
         // Any agent must implement these methods
