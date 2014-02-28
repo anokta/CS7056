@@ -10,7 +10,8 @@ namespace FiniteStateMachine
 {
     public class Tile
     {
-
+        private static float[] TILE_COSTS = { 1.0f, 1.5f, 2.5f };
+ 
         // tile id for the image offset
         private int tileID;
         public int TileID

@@ -25,12 +25,7 @@ namespace FiniteStateMachine
         SpriteBatch spriteBatch;
         SpriteFont spriteFont;
 
-        private Texture2D background;
-        private Texture2D shuttle;
-        private Texture2D earth;
-
         private TileMap map;
-        private Texture2D tiles;
 
         public Game1()
         {
@@ -82,12 +77,7 @@ namespace FiniteStateMachine
             spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteFont = Content.Load<SpriteFont>("Arial");
 
-            background = Content.Load<Texture2D>("Sprites/stars"); // change these names to the names of your images
-            shuttle = Content.Load<Texture2D>("Sprites/shuttle");  // if you are using your own images.
-            earth = Content.Load<Texture2D>("Sprites/earth");
-
-            tiles = Content.Load<Texture2D>("Sprites/largetileset");
-            map.SetContent(tiles, Content.Load<Texture2D>("Sprites/overlay"));
+            map.SetContent(Content.Load<Texture2D>("Sprites/terrains"),  Content.Load<Texture2D>("Sprites/locations"), Content.Load<Texture2D>("Sprites/characters"), Content.Load<Texture2D>("Sprites/overlay"));
         }
 
         /// <summary>

@@ -10,7 +10,7 @@ namespace FiniteStateMachine
 {
     public class TileMap
     {
-        private Texture2D tileset;
+        private Texture2D terrainSet, locationSet, characterSet;
         private Texture2D overlay;
 
         private int tileSize;
@@ -35,9 +35,11 @@ namespace FiniteStateMachine
             GenerateRandomMap();
         }
 
-        public void SetContent(Texture2D tileset, Texture2D overlay)
+        public void SetContent(Texture2D terrainset, Texture2D locationset, Texture2D characterset, Texture2D overlay)
         {
-            this.tileset = tileset;
+            this.terrainSet = terrainset;
+            this.locationSet = locationset;
+            this.characterSet = characterset;
             this.overlay = overlay;
         }
 
@@ -53,13 +55,13 @@ namespace FiniteStateMachine
                 {
                     int x = (int)screenOffset.X + (j - (mapCols - 1) / 2) * tileSize - tileSize / 2;
 
-                    // base        
-                    spriteBatch.Draw(tileset, new Vector2(x, y), GetSourceRectangle(tiles[i][j].TileID), Color.White);
+                    // terrain        
+                    spriteBatch.Draw(terrainSet, new Rectangle(x, y, tileSize, tileSize), GetSourceRectangle(tiles[i][j].TileID, terrainSet.Height), Color.White);
 
                     // location
                     if (tiles[i][j].LocationID >= 0)
                     {
-                        spriteBatch.Draw(tileset, new Vector2(x, y), new Rectangle(tileSize * i, tileSize * 6, tileSize, tileSize), Color.White);
+                        spriteBatch.Draw(locationSet, new Rectangle(x, y, tileSize, tileSize), GetSourceRectangle(tiles[i][j].LocationID, locationSet.Height), Color.White);
                     }
 
                     // overlay
@@ -73,7 +75,7 @@ namespace FiniteStateMachine
                 Vector2 pos = AgentManager.GetAgent(i).CurrentPosition;
                 int x = (int)screenOffset.X + ((int)pos.X - (mapCols - 1) / 2) * tileSize - tileSize / 2;
                 int y = (int)screenOffset.Y + ((int)pos.Y - (mapRows - 1) / 2) * tileSize - tileSize / 2;
-                spriteBatch.Draw(tileset, new Vector2(x, y), new Rectangle(tileSize * i, tileSize * 8, tileSize, tileSize), Color.White);
+                spriteBatch.Draw(characterSet, new Rectangle(x, y, tileSize, tileSize), GetSourceRectangle(i, characterSet.Height), Color.White);
             }
 
             spriteBatch.End();
@@ -90,7 +92,7 @@ namespace FiniteStateMachine
                     //    tiles[i].Add(new Tile(6));
                     //else
                     //{
-                        tiles[i].Add(new Tile(rand.Next(6)));
+                        tiles[i].Add(new Tile(rand.Next(3)));
                     //}
                 }
             }
@@ -115,9 +117,9 @@ namespace FiniteStateMachine
             }
         }
 
-        private Rectangle GetSourceRectangle(int tileID)
+        private Rectangle GetSourceRectangle(int tileID, int size)
         {
-            return new Rectangle(tileSize * tileID, 0, tileSize, tileSize);
+            return new Rectangle(size * tileID, 0, size, size);
         }
     }
 }
