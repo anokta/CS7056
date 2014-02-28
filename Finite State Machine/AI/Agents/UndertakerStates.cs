@@ -45,7 +45,7 @@ namespace FiniteStateMachine
     {
         public override void Enter(Undertaker undertaker)
         {
-            Printer.Print(undertaker.Id, "Arrived in " + LocationPropertes.ToString(undertaker.Location) + ".");
+            Printer.Print(undertaker.Id, "Arrived in " + LocationProperties.ToString(undertaker.Location) + ".");
         }
 
         public override void Execute(Undertaker undertaker)
@@ -70,7 +70,7 @@ namespace FiniteStateMachine
         {
             if (undertaker.Location != Location.cemetery)
             {
-                Printer.Print(undertaker.Id, "Leaving " + LocationPropertes.ToString(undertaker.Location) + ".");
+                Printer.Print(undertaker.Id, "Leaving " + LocationProperties.ToString(undertaker.Location) + ".");
             }
         }
 

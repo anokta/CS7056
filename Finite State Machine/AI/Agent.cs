@@ -39,7 +39,7 @@ namespace FiniteStateMachine
         public Location Location
         {
             get { return location; }
-            set { location = value; position = LocationPropertes.LocationCoords[(int)location]; }
+            set { location = value; position = LocationProperties.LocationCoords[(int)location]; }
         }
 
         private Vector2 position;

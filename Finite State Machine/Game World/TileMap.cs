@@ -43,17 +43,17 @@ namespace FiniteStateMachine
             this.overlay = overlay;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 screenOffset)
+        public void Draw(SpriteBatch spriteBatch, int screenOffsetX, int screenOffsetY)
         {
             spriteBatch.Begin();
 
             // tiles
             for (int i = 0; i < mapRows; ++i)
             {
-                int y = (int)screenOffset.Y + (i - (mapRows - 1) / 2) * tileSize - tileSize/2;
+                int y = screenOffsetY + (i - (mapRows - 1) / 2) * tileSize - tileSize/2;
                 for (int j = 0; j < mapCols; ++j)
                 {
-                    int x = (int)screenOffset.X + (j - (mapCols - 1) / 2) * tileSize - tileSize / 2;
+                    int x = screenOffsetX + (j - (mapCols - 1) / 2) * tileSize - tileSize / 2;
 
                     // terrain        
                     spriteBatch.Draw(terrainSet, new Rectangle(x, y, tileSize, tileSize), GetSourceRectangle(tiles[i][j].TileID, terrainSet.Height), Color.White);
@@ -72,9 +72,10 @@ namespace FiniteStateMachine
             // characters
             for (int i = 0; i < AgentManager.GetCount(); ++i)
             {
-                Vector2 pos = AgentManager.GetAgent(i).CurrentPosition;
-                int x = (int)screenOffset.X + ((int)pos.X - (mapCols - 1) / 2) * tileSize - tileSize / 2;
-                int y = (int)screenOffset.Y + ((int)pos.Y - (mapRows - 1) / 2) * tileSize - tileSize / 2;
+                Vector2 position = AgentManager.GetAgent(i).CurrentPosition;
+                int x = screenOffsetX + ((int)position.X - (mapCols - 1) / 2) * tileSize - tileSize / 2;
+                int y = screenOffsetY + ((int)position.Y - (mapRows - 1) / 2) * tileSize - tileSize / 2;
+
                 spriteBatch.Draw(characterSet, new Rectangle(x, y, tileSize, tileSize), GetSourceRectangle(i, characterSet.Height), Color.White);
             }
 
@@ -83,17 +84,12 @@ namespace FiniteStateMachine
 
         private void GenerateRandomMap()
         {
-            // tiles
+            // terrain
             for (int i = 0; i < mapRows; ++i)
             {
                 for (int j = 0; j < mapCols; ++j)
                 {
-                    //if (i == 0 || j == 0 || i == mapRows - 1 || j == mapCols - 1)
-                    //    tiles[i].Add(new Tile(6));
-                    //else
-                    //{
-                        tiles[i].Add(new Tile(rand.Next(3)));
-                    //}
+                    tiles[i].Add(new Tile(rand.Next(3)));
                 }
             }
 
@@ -107,10 +103,8 @@ namespace FiniteStateMachine
                     if (tiles[y][x].LocationID < 0)
                     {
                         tiles[y][x].LocationID = i;
-                        LocationPropertes.LocationCoords[i] = new Vector2(x, y);
-                            //((x - (mapCols - 1) / 2) * tileSize - tileSize / 2, (y - (mapRows - 1) / 2) * tileSize - tileSize / 2);
-                        
-                        //tiles[y][x].TintAlpha = 0.5f;
+                        LocationProperties.LocationCoords[i] = new Vector2(x, y);
+
                         break;
                     }
                 }

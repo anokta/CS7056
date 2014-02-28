@@ -17,6 +17,7 @@ namespace FiniteStateMachine
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
+        TileMap Map;
         Miner Bob;
         MinersWife Elsa;
         Outlaw Jesse;
@@ -25,7 +26,6 @@ namespace FiniteStateMachine
         SpriteBatch spriteBatch;
         SpriteFont spriteFont;
 
-        private TileMap map;
 
         public Game1()
         {
@@ -49,7 +49,7 @@ namespace FiniteStateMachine
             // Here's a little hack: The Miner and MinersWife must know each other's id in
             // order to communicate.  We calculate them inside each agent based on their
             // creation order, so the pair must always be created in this sequence.
-            map = new TileMap();
+            Map = new TileMap();
 
             Bob = new Miner();
             Elsa = new MinersWife();
@@ -77,7 +77,7 @@ namespace FiniteStateMachine
             spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteFont = Content.Load<SpriteFont>("Arial");
 
-            map.SetContent(Content.Load<Texture2D>("Sprites/terrains"),  Content.Load<Texture2D>("Sprites/locations"), Content.Load<Texture2D>("Sprites/characters"), Content.Load<Texture2D>("Sprites/overlay"));
+            Map.SetContent(Content.Load<Texture2D>("Sprites/terrains"),  Content.Load<Texture2D>("Sprites/locations"), Content.Load<Texture2D>("Sprites/characters"), Content.Load<Texture2D>("Sprites/overlay"));
         }
 
         /// <summary>
@@ -129,15 +129,12 @@ namespace FiniteStateMachine
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            int screenWidth = GraphicsDevice.Viewport.Width;
-            int screenHeight = GraphicsDevice.Viewport.Height;
-            Vector2 screenOffset = new Vector2(screenWidth / 2, screenHeight / 2);
+            int screenOffsetX = GraphicsDevice.Viewport.Width / 2;
+            int screenOffsetY = GraphicsDevice.Viewport.Height / 2;
 
-            map.Draw(spriteBatch, screenOffset);
-
+            Map.Draw(spriteBatch, screenOffsetX, screenOffsetY);
 
            // Printer.Draw(spriteBatch, spriteFont);
-
 
             base.Draw(gameTime);
         }

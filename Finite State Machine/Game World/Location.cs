@@ -19,7 +19,7 @@ namespace FiniteStateMachine
         cemetery = 7 
     }
 
-    public class LocationPropertes
+    public class LocationProperties
     {
         public static Vector2[] LocationCoords = new Vector2[Enum.GetValues(typeof(Location)).Length];
 

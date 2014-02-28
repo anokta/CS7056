@@ -19,7 +19,7 @@ namespace FiniteStateMachine
 
         public override void Execute(Outlaw outlaw)
         {
-            Printer.Print(outlaw.Id, "Chilling in " + LocationPropertes.ToString(outlaw.Location) + ".");
+            Printer.Print(outlaw.Id, "Chilling in " + LocationProperties.ToString(outlaw.Location) + ".");
 
             if (outlaw.Bored())
             {

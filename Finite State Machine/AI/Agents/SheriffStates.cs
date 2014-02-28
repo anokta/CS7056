@@ -15,7 +15,7 @@ namespace FiniteStateMachine
             while (nextLocation == Location.outlawCamp || nextLocation == sheriff.Location)
                 nextLocation = (Location)rand.Next(Enum.GetNames(typeof(Location)).Length);
 
-            Printer.Print(sheriff.Id, "Going to " + LocationPropertes.ToString(nextLocation) + "!");
+            Printer.Print(sheriff.Id, "Going to " + LocationProperties.ToString(nextLocation) + "!");
             sheriff.Location = nextLocation;
 
             sheriff.OutlawSpotted = false;
@@ -23,7 +23,7 @@ namespace FiniteStateMachine
 
         public override void Execute(Sheriff sheriff)
         {
-            Printer.Print(sheriff.Id, "Patrolling in " + LocationPropertes.ToString(sheriff.Location) + ".");
+            Printer.Print(sheriff.Id, "Patrolling in " + LocationProperties.ToString(sheriff.Location) + ".");
 
             for (int i = 0; i < Agent.AgentsCount; ++i)
             {
@@ -53,7 +53,7 @@ namespace FiniteStateMachine
 
         public override void Exit(Sheriff sheriff)
         {
-            Printer.Print(sheriff.Id, "Leaving " + LocationPropertes.ToString(sheriff.Location) + ".");
+            Printer.Print(sheriff.Id, "Leaving " + LocationProperties.ToString(sheriff.Location) + ".");
         }
 
         public override bool OnMesssage(Sheriff agent, Telegram telegram)
