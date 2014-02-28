@@ -15,16 +15,28 @@ namespace FiniteStateMachine
 
         private int tileSize;
 
-        private int mapCols, mapRows;
+        private static int mapCols, mapRows;
 
-        private List<List<Tile>> tiles;
+        private static List<List<Tile>> tiles;
+        public static List<List<Tile>> Tiles
+        {
+            get { return tiles; }
+        }
+        public static int Width
+        {
+            get { return mapCols; }
+        }
+        public static int Height
+        {
+            get { return mapRows; }
+        }
 
         private static Random rand = new Random();
 
-        public TileMap(int mapCols = 19, int mapRows = 13, int tileSize = 48)
+        public TileMap(int mapcols = 19, int maprows = 13, int tileSize = 48)
         {
-            this.mapCols = mapCols;
-            this.mapRows = mapRows;
+            mapCols = mapcols;
+            mapRows = maprows;
 
             tiles = new List<List<Tile>>();
             for (int i = 0; i < mapRows; ++i)
@@ -89,7 +101,7 @@ namespace FiniteStateMachine
             {
                 for (int j = 0; j < mapCols; ++j)
                 {
-                    tiles[i].Add(new Tile(rand.Next(3)));
+                    tiles[i].Add(new Tile(rand.Next(3), new Vector2(j, i)));
                 }
             }
 

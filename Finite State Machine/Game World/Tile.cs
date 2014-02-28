@@ -27,6 +27,20 @@ namespace FiniteStateMachine
             set { locationID = value; }
         }
 
+        private Vector2 tilePosition;
+        public Vector2 Position
+        {
+            get { return tilePosition; }
+            set { tilePosition = value; }
+        }
+
+        private float tileCost;
+        public float TileCost
+        {
+            get { return tileCost; }
+            set { tileCost = value; }
+        }
+
         // overlay
         private Color tintColor;
         public Color TintColor
@@ -43,9 +57,13 @@ namespace FiniteStateMachine
         }
 
 
-        public Tile(int tileID)
+        public Tile(int tileID, Vector2 position)
         {
             this.tileID = tileID;
+
+            tilePosition = position;
+            tileCost = TILE_COSTS[tileID];
+            
             tintColor = Color.White;
             tintAlpha = 0.0f;
             locationID = -1;
