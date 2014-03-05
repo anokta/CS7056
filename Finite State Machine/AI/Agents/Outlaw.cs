@@ -25,12 +25,17 @@ namespace FiniteStateMachine
             stateMachine.GlobalState = new OutlawGlobalState();
 
             Location = Location.outlawCamp;
+            TargetLocation = Location.outlawCamp;
         }
 
         // This method is invoked by the Game object as a result of XNA updates 
         public override void Update()
         {
-            BoredomCountdown -= 1;
+            if (Location >= 0)
+            {
+                BoredomCountdown -= 1;
+            }
+
             stateMachine.Update();
         }
 

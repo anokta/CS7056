@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Microsoft.Xna.Framework;
+
 namespace FiniteStateMachine
 {
     // This class implements the state in which the Miner agent mines for gold
@@ -10,7 +12,7 @@ namespace FiniteStateMachine
         public override void Enter(Miner miner)
         {
             Printer.Print(miner.Id, "Walkin' to the goldmine");
-            miner.Location = Location.goldMine;
+            miner.TargetLocation = Location.goldMine;
         }
 
         public override void Execute(Miner miner)
@@ -45,7 +47,7 @@ namespace FiniteStateMachine
         public override void Enter(Miner miner)
         {
             Printer.Print(miner.Id, "Goin' to the bank. Yes siree");
-            miner.Location = Location.bank;
+            miner.TargetLocation = Location.bank;
         }
 
         public override void Execute(Miner miner)
@@ -81,7 +83,7 @@ namespace FiniteStateMachine
         public override void Enter(Miner miner)
         {
             Printer.Print(miner.Id, "Walkin' Home");
-            miner.Location = Location.shack;
+            miner.TargetLocation = Location.shack;
             Message.DispatchMessage(0, miner.Id, miner.WifeId, MessageType.HiHoneyImHome);
         }
 
@@ -129,7 +131,7 @@ namespace FiniteStateMachine
             if (miner.Location != Location.saloon)
             {
                 Printer.Print(miner.Id, "Boy, ah sure is thusty! Walking to the saloon");
-                miner.Location = Location.saloon;
+                miner.TargetLocation = Location.saloon;
             }
         }
 
@@ -178,6 +180,48 @@ namespace FiniteStateMachine
         }
     }
 
+    public class MinerTravelToTarget : State<Miner>
+    {
+        private static AStar pathFinder = new AStar();
+        private List<Tile> path;
+
+        public override void Enter(Miner miner)
+        {
+            path = pathFinder.FindPath(miner.CurrentPosition, LocationProperties.LocationCoords[(int)miner.TargetLocation]);
+            miner.Location = (Location)(-1);
+        }
+
+        public override void Execute(Miner miner)
+        {
+            if (path.Count > 0)
+            {
+                foreach (Tile tile in path)
+                {
+                    tile.TintColor = Color.Blue;
+                    tile.TintAlpha = 0.5f;
+                }
+
+                miner.CurrentPosition = path[0].Position;
+                path.RemoveAt(0);
+            }
+            else
+            {
+                miner.Location = miner.TargetLocation;
+                miner.StateMachine.RevertToPreviousState();
+            }
+        }
+
+        public override void Exit(Miner miner)
+        {
+            path.Clear();
+        }
+
+        public override bool OnMesssage(Miner agent, Telegram telegram)
+        {
+            return false;
+        }
+    }
+
     // If the agent has a global state, then it is executed every Update() cycle
     public class MinerGlobalState : State<Miner>
     {
@@ -188,6 +232,8 @@ namespace FiniteStateMachine
 
         public override void Execute(Miner miner)
         {
+            if (miner.Location != miner.TargetLocation && !miner.StateMachine.IsInState(new MinerTravelToTarget()))
+                miner.StateMachine.ChangeState(new MinerTravelToTarget());
         }
 
         public override void Exit(Miner miner)

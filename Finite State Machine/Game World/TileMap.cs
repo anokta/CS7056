@@ -94,6 +94,13 @@ namespace FiniteStateMachine
             spriteBatch.End();
         }
 
+        public void Update()
+        {
+            for (int i = 0; i < Height; ++i)
+                for (int j = 0; j < Width; ++j)
+                    Tiles[i][j].TintAlpha = 0.0f;
+        }
+
         private void GenerateRandomMap()
         {
             // terrain

@@ -25,6 +25,7 @@ namespace FiniteStateMachine
             stateMachine.GlobalState = new UndertakerGlobalState();
 
             Location = Location.undertakers;
+            TargetLocation = Location.undertakers;
         }
 
         // This method is invoked by the Game object as a result of XNA updates 

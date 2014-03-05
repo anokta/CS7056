@@ -33,6 +33,7 @@ namespace FiniteStateMachine
             stateMachine.GlobalState = new SheriffGlobalState();
 
             Location = Location.sheriffsOffice;
+            TargetLocation = Location.sheriffsOffice;
         }
 
         // This method is invoked by the Game object as a result of XNA updates 

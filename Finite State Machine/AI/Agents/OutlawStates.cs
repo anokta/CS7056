@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Microsoft.Xna.Framework;
+
 namespace FiniteStateMachine
 {
     public class LurkInOutlawCamp : State<Outlaw>
@@ -11,7 +13,7 @@ namespace FiniteStateMachine
 
         public override void Enter(Outlaw outlaw)
         {
-            outlaw.Location = Location.outlawCamp;
+            outlaw.TargetLocation = Location.outlawCamp;
             Printer.Print(outlaw.Id, "Going back home, sweet home!");
 
             outlaw.BoredomCountdown = rand.Next(1, 10);
@@ -45,7 +47,7 @@ namespace FiniteStateMachine
         public override void Enter(Outlaw outlaw)
         {
             Printer.Print(outlaw.Id, "Going to the cemetery!");
-            outlaw.Location = Location.cemetery;
+            outlaw.TargetLocation = Location.cemetery;
 
             outlaw.BoredomCountdown = rand.Next(1, 10);
         }
@@ -78,7 +80,7 @@ namespace FiniteStateMachine
         public override void Enter(Outlaw outlaw)
         {
             Printer.Print(outlaw.Id, "Going to the bank, Let's EARN some money!");
-            outlaw.Location = Location.bank;
+            outlaw.TargetLocation = Location.bank;
         }
 
         public override void Execute(Outlaw outlaw)
@@ -117,7 +119,50 @@ namespace FiniteStateMachine
         {
             outlaw.IsDead = false;
             outlaw.Location = Location.outlawCamp;
+            outlaw.TargetLocation = Location.outlawCamp;
             Printer.Print(outlaw.Id, "I am back, from dead!");
+        }
+
+        public override bool OnMesssage(Outlaw agent, Telegram telegram)
+        {
+            return false;
+        }
+    }
+
+    public class OutlawTravelToTarget : State<Outlaw>
+    {
+        private static AStar pathFinder = new AStar();
+        private List<Tile> path;
+
+        public override void Enter(Outlaw outlaw)
+        {
+            path = pathFinder.FindPath(outlaw.CurrentPosition, LocationProperties.LocationCoords[(int)outlaw.TargetLocation]);
+            outlaw.Location = (Location)(-1);
+        }
+
+        public override void Execute(Outlaw outlaw)
+        {
+            if (path.Count > 0)
+            {
+                foreach (Tile tile in path)
+                {
+                    tile.TintColor = Color.Red;
+                    tile.TintAlpha = 0.5f;
+                }
+
+                outlaw.CurrentPosition = path[0].Position;
+                path.RemoveAt(0);
+            }
+            else
+            {
+                outlaw.Location = outlaw.TargetLocation;
+                outlaw.StateMachine.RevertToPreviousState();
+            }
+        }
+
+        public override void Exit(Outlaw outlaw)
+        {
+            path.Clear();
         }
 
         public override bool OnMesssage(Outlaw agent, Telegram telegram)
@@ -137,15 +182,23 @@ namespace FiniteStateMachine
 
         public override void Execute(Outlaw outlaw)
         {
-            if (rand.Next(20) == 1 && !outlaw.StateMachine.IsInState(new AttemptToRobBank()))
+            if (!outlaw.IsDead)
             {
-                outlaw.StateMachine.ChangeState(new AttemptToRobBank());
+                if (!outlaw.StateMachine.IsInState(new OutlawTravelToTarget()))
+                {
+                    if (outlaw.Location != outlaw.TargetLocation)
+                        outlaw.StateMachine.ChangeState(new OutlawTravelToTarget());
+
+                    else if (rand.Next(20) == 1 && !outlaw.StateMachine.IsInState(new AttemptToRobBank()))
+                    {
+                        outlaw.StateMachine.ChangeState(new AttemptToRobBank());
+                    }
+                }
             }
         }
 
         public override void Exit(Outlaw outlaw)
         {
-
         }
 
         public override bool OnMesssage(Outlaw outlaw, Telegram telegram)

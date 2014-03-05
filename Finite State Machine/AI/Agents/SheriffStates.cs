@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace FiniteStateMachine
 {
@@ -16,7 +17,7 @@ namespace FiniteStateMachine
                 nextLocation = (Location)rand.Next(Enum.GetNames(typeof(Location)).Length);
 
             Printer.Print(sheriff.Id, "Going to " + LocationProperties.ToString(nextLocation) + "!");
-            sheriff.Location = nextLocation;
+            sheriff.TargetLocation = nextLocation;
 
             sheriff.OutlawSpotted = false;
         }
@@ -25,6 +26,7 @@ namespace FiniteStateMachine
         {
             Printer.Print(sheriff.Id, "Patrolling in " + LocationProperties.ToString(sheriff.Location) + ".");
 
+            if(sheriff.Location >= 0)
             for (int i = 0; i < Agent.AgentsCount; ++i)
             {
                 if ((i != sheriff.Id) && (sheriff.Location == AgentManager.GetAgent(i).Location))
@@ -68,7 +70,7 @@ namespace FiniteStateMachine
         public override void Enter(Sheriff sheriff)
         {
             Printer.Print(sheriff.Id, "Going to the bank.");
-            sheriff.Location = Location.bank;
+            sheriff.TargetLocation = Location.bank;
         }
 
         public override void Execute(Sheriff sheriff)
@@ -97,7 +99,7 @@ namespace FiniteStateMachine
         public override void Enter(Sheriff sheriff)
         {
             Printer.Print(sheriff.Id, "Going to the saloon!");
-            sheriff.Location = Location.saloon;
+            sheriff.TargetLocation = Location.saloon;
         }
 
         public override void Execute(Sheriff sheriff)
@@ -135,7 +137,50 @@ namespace FiniteStateMachine
         {
             sheriff.IsDead = false;
             sheriff.Location = Location.sheriffsOffice;
+            sheriff.TargetLocation = Location.sheriffsOffice;
             Printer.Print(sheriff.Id, "It's a miracle, I am alive!");
+        }
+
+        public override bool OnMesssage(Sheriff agent, Telegram telegram)
+        {
+            return false;
+        }
+    }
+
+    public class SheriffTravelToTarget : State<Sheriff>
+    {
+        private static AStar pathFinder = new AStar();
+        private List<Tile> path;
+
+        public override void Enter(Sheriff sheriff)
+        {
+            path = pathFinder.FindPath(sheriff.CurrentPosition, LocationProperties.LocationCoords[(int)sheriff.TargetLocation]);
+            sheriff.Location = (Location)(-1);
+        }
+
+        public override void Execute(Sheriff sheriff)
+        {
+            if (path.Count > 0)
+            {
+                foreach (Tile tile in path)
+                {
+                    tile.TintColor = Color.Yellow;
+                    tile.TintAlpha = 0.5f;
+                }
+
+                sheriff.CurrentPosition = path[0].Position;
+                path.RemoveAt(0);
+            }
+            else
+            {
+                sheriff.Location = sheriff.TargetLocation;
+                sheriff.StateMachine.RevertToPreviousState();
+            }
+        }
+
+        public override void Exit(Sheriff sheriff)
+        {
+            path.Clear();
         }
 
         public override bool OnMesssage(Sheriff agent, Telegram telegram)
@@ -155,7 +200,11 @@ namespace FiniteStateMachine
 
         public override void Execute(Sheriff sheriff)
         {
-
+            if (!sheriff.IsDead)
+            {
+                if (sheriff.Location != sheriff.TargetLocation && !sheriff.StateMachine.IsInState(new SheriffTravelToTarget()))
+                    sheriff.StateMachine.ChangeState(new SheriffTravelToTarget());
+            }
         }
 
         public override void Exit(Sheriff sheriff)

@@ -38,7 +38,7 @@ namespace FiniteStateMachine
             get { return moneyInBank; }
             set { moneyInBank = value; }
         }
-	
+
         // The agent's thirst level increases by one for each update
         private int howThirsty;
         public int HowThirsty
@@ -54,12 +54,16 @@ namespace FiniteStateMachine
             get { return howFatigued; }
             set { howFatigued = value; }
         }
-	
+
         // The constructor invokes the base class constructor, which then creates 
         // an id for the new agent object and then creates and initalises the agent's
         // StateMachine
-        public Miner() : base()
+        public Miner()
+            : base()
         {
+            Location = Location.shack;
+            TargetLocation = Location.shack;
+
             stateMachine = new StateMachine<Miner>(this);
             stateMachine.CurrentState = new GoHomeAndSleepTillRested();
             stateMachine.GlobalState = new MinerGlobalState();
@@ -69,14 +73,17 @@ namespace FiniteStateMachine
         // This method is invoked by the Game object as a result of XNA updates 
         public override void Update()
         {
-            howThirsty += 1;
-            stateMachine.Update();
+            if (Location >= 0)
+            {
+                howThirsty += 1;
+            }
+            StateMachine.Update();
         }
 
         // This method is invoked when the agent receives a message
         public override bool HandleMessage(Telegram telegram)
         {
-            return stateMachine.HandleMessage(telegram);    
+            return stateMachine.HandleMessage(telegram);
         }
 
         // This method checks whether the agent's pockets are full or not, depending on the predefined level
@@ -100,7 +107,7 @@ namespace FiniteStateMachine
         // This method checks whether the agent is fatigued or not, depending on the predefined level
         public Boolean Fatigued()
         {
-            if(howFatigued >= TirednessThreshold)
+            if (howFatigued >= TirednessThreshold)
                 return true;
             else
                 return false;

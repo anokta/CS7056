@@ -100,25 +100,27 @@ namespace FiniteStateMachine
         {
             if (Keyboard.GetState().IsKeyDown(Keys.P))
                 return;
-            countt = (countt + 1) % 40;
+            countt = (countt + 1) % 10;
             if (countt != 1) return;
 
             // Allows the game to exit
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
-          
+
+            Map.Update();
+
             Message.gameTime = gameTime;
-            Bob.Update();
-            Elsa.Update();
+            //Bob.Update();
+            //Elsa.Update();
             Jesse.Update();
-            Wyatt.Update();
-            Ripp.Update();
-            Message.SendDelayedMessages();
+            //Wyatt.Update();
+            //Ripp.Update();
+            //Message.SendDelayedMessages();
             base.Update(gameTime);
 
             //Printer.PrintMessageData("\n"); // Console.WriteLine("\n");
 
-            Console.WriteLine("\n");
+            //Console.WriteLine("\n");
         }
 
         /// <summary>

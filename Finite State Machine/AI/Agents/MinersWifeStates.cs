@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Microsoft.Xna.Framework;
+
 namespace FiniteStateMachine
 {
     // In this state, the MinersWife agent does random house work

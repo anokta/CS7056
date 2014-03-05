@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Microsoft.Xna.Framework;
+
 namespace FiniteStateMachine
 {
     public class HoverInTheOffice : State<Undertaker>
@@ -12,7 +14,7 @@ namespace FiniteStateMachine
         public override void Enter(Undertaker undertaker)
         {
             Printer.Print(undertaker.Id, "Going back to the office!");
-            undertaker.Location = Location.undertakers;
+            undertaker.TargetLocation = Location.undertakers;
         }
 
         public override void Execute(Undertaker undertaker)
@@ -31,7 +33,7 @@ namespace FiniteStateMachine
             {
                 case MessageType.Gunfight:
                     Printer.Print(undertaker.Id, "Let's get down to business!");
-                    undertaker.Location = AgentManager.GetAgent(telegram.Sender).Location;
+                    undertaker.TargetLocation = AgentManager.GetAgent(telegram.Sender).Location;
                     undertaker.StateMachine.ChangeState(new LookForDeadBodies());
 
                     return true;
@@ -85,7 +87,7 @@ namespace FiniteStateMachine
         public override void Enter(Undertaker undertaker)
         {
             Printer.Print(undertaker.Id, "Carrying the body to the tombs in the cemetery!");
-            undertaker.Location = Location.cemetery;
+            undertaker.TargetLocation = Location.cemetery;
             AgentManager.GetAgent(undertaker.CorpseID).Location = Location.cemetery;
         }
 
@@ -108,6 +110,49 @@ namespace FiniteStateMachine
             return false;
         }
     }
+
+    public class UndertakerTravelToTarget : State<Undertaker>
+    {
+        private static AStar pathFinder = new AStar();
+        private List<Tile> path;
+
+        public override void Enter(Undertaker undertaker)
+        {
+            path = pathFinder.FindPath(undertaker.CurrentPosition, LocationProperties.LocationCoords[(int)undertaker.TargetLocation]);
+            undertaker.Location = (Location)(-1);
+        }
+
+        public override void Execute(Undertaker undertaker)
+        {
+            if (path.Count > 0)
+            {
+                foreach (Tile tile in path)
+                {
+                    tile.TintColor = Color.Black;
+                    tile.TintAlpha = 0.5f;
+                }
+
+                undertaker.CurrentPosition = path[0].Position;
+                path.RemoveAt(0);
+            }
+            else
+            {
+                undertaker.Location = undertaker.TargetLocation;
+                undertaker.StateMachine.RevertToPreviousState();
+            }
+        }
+
+        public override void Exit(Undertaker undertaker)
+        {
+            path.Clear();
+        }
+
+        public override bool OnMesssage(Undertaker agent, Telegram telegram)
+        {
+            return false;
+        }
+    }
+
 
     // If the agent has a global state, then it is executed every Update() cycle
     public class UndertakerGlobalState : State<Undertaker>
