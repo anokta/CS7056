@@ -119,7 +119,7 @@
   <ItemGroup>
     <Compile Include="AI\Agent.cs" />
     <Compile Include="AI\AgentManager.cs" />
-    <Compile Include="AI\Agents\SenseEvent.cs" />
+    <Compile Include="AI\SenseEvent.cs" />
     <Compile Include="AI\AStar.cs" />
     <Compile Include="Game World\Location.cs" />
     <Compile Include="AI\Agents\MinersWifeStates.cs" />

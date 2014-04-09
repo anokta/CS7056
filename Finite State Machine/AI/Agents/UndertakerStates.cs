@@ -60,6 +60,11 @@ namespace FiniteStateMachine
             {
                 if (AgentManager.GetAgent(i).IsDead)
                 {
+                    if (undertaker.CurrentPosition != AgentManager.GetAgent(i).CurrentPosition)
+                    {
+                        undertaker.StateMachine.ChangeState(new UndertakerTravelToTarget(AgentManager.GetAgent(i).CurrentPosition, new LookForDeadBodies()));
+                        return;
+                    }
                     undertaker.CorpseID = i;
                 }
             }

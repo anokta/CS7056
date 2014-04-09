@@ -13,8 +13,6 @@ namespace FiniteStateMachine
         public override void Enter(Sheriff sheriff)
         {
             Printer.Print(sheriff.Id, "Arrived!");
-
-            sheriff.OutlawSpotted = false;
         }
 
         public override void Execute(Sheriff sheriff)
@@ -242,6 +240,8 @@ namespace FiniteStateMachine
                         sheriff.StateMachine.ChangeState(new SheriffTravelToTarget(Location.bank, new StopByBankAndDepositGold()));
                     }
 
+                    sheriff.OutlawSpotted = false;
+
                     return true;
                 case MessageType.Dead:
                     sheriff.StateMachine.ChangeState(new DropDeadSheriff());
@@ -256,20 +256,29 @@ namespace FiniteStateMachine
 
         public override bool OnSenseEvent(Sheriff sheriff, Sense sense)
         {
-            if (typeof(Outlaw) == AgentManager.GetAgent(sense.Sender).GetType() && !AgentManager.GetAgent(sense.Sender).IsDead) // outlaw spotted
+            if (!sheriff.IsDead)
             {
-                Printer.Print(sheriff.Id, "Sure glad to see you bandit, but hand me those guns.");
-                sheriff.OutlawSpotted = true;
-                Message.DispatchMessage(0, sheriff.Id, sense.Sender, MessageType.SheriffEncountered);
-            }
-            else // greetings
-            {
-                Printer.Print(sheriff.Id, "Good day, townie!");
-                Message.DispatchMessage(0, sheriff.Id, sense.Sender, MessageType.SheriffEncountered);
+                if (typeof(Outlaw) == AgentManager.GetAgent(sense.Sender).GetType()) // outlaw spotted
+                {
+                    if (!sheriff.OutlawSpotted && !AgentManager.GetAgent(sense.Sender).IsDead)
+                    {
+                        Printer.Print(sheriff.Id, "Sure glad to see you bandit, but hand me those guns.");
+                        sheriff.OutlawSpotted = true;
+                        Message.DispatchMessage(0, sheriff.Id, sense.Sender, MessageType.SheriffEncountered);
+
+                        return true;
+                    }
+                }
+                else // greetings
+                {
+                    Printer.Print(sheriff.Id, "Good day, townie!");
+                    Message.DispatchMessage(0, sheriff.Id, sense.Sender, MessageType.SheriffEncountered);
+
+                    return true;
+                }
             }
 
-
-            return true;
+            return false;
         }
     }
 }

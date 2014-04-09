@@ -5,11 +5,15 @@ using System.Text;
 
 using Microsoft.Xna.Framework;
 
-
 namespace FiniteStateMachine
 {
     public class AStar
     {
+        public enum SearchType { ShortestPath, SensePropogation }; 
+        SearchType type;
+        
+        private float PERCEPTION_THRESHOLD = 6.0f;
+
         private class Node
         {
             public Tile tile;
@@ -17,17 +21,17 @@ namespace FiniteStateMachine
             public float G;
             public float H;
 
-            public Node(Tile tile, Vector2 targetPosition, Node parent)
+            public Node(Tile tile, Vector2 targetPosition, Node parent, SearchType type)
             {
                 this.tile = tile;
                 this.parent = parent;
 
                 if (this.parent == null)
                     this.G = 0;
-                //else if (tile.LocationID >= 0)
-                //    this.G = float.MaxValue;
-                else
-                    this.G = this.parent.G +  tile.TileCost * (Math.Abs(this.parent.tile.Position.X - tile.Position.X) + Math.Abs(this.parent.tile.Position.Y - tile.Position.Y));
+                else if (type == SearchType.ShortestPath)
+                    this.G = this.parent.G + tile.TileCost * (Math.Abs(this.parent.tile.Position.X - tile.Position.X) + Math.Abs(this.parent.tile.Position.Y - tile.Position.Y));
+                else if (type == SearchType.SensePropogation)
+                    this.G = this.parent.G + tile.TileAttenuation;
 
                 H = Math.Abs(targetPosition.X - tile.Position.X) + Math.Abs(targetPosition.Y - tile.Position.Y);
             }
@@ -41,18 +45,87 @@ namespace FiniteStateMachine
         private List<Node> openList;
         private List<Node> closedList;
 
-        public AStar()
+        public AStar(SearchType searchType = SearchType.ShortestPath)
         {
             openList = new List<Node>();
             closedList = new List<Node>();
+
+            type = searchType;
+        }
+
+        public bool PropogateSense(Vector2 startPosition, Vector2 targetPosition)
+        {
+            Tile startTile = TileMap.Tiles[(int)startPosition.Y][(int)startPosition.X];
+
+            Node startNode = new Node(startTile, targetPosition, null, type);
+            
+            openList.Clear();
+            closedList.Clear();
+
+            openList.Add(startNode);
+            while (openList.Count > 0)
+            {
+                Node currentNode = null;
+                float minF = float.MaxValue;
+                for (int i = 0; i < openList.Count; ++i)
+                {
+                    float F = ((Node)openList[i]).GetF();
+                    if (F < minF)
+                    {
+                        currentNode = (Node)openList[i];
+                        minF = F;
+                    }
+                }
+
+                closedList.Add(currentNode);
+                openList.Remove(currentNode);
+
+                if (currentNode.tile.Position == targetPosition)
+                    return true;
+                else if(currentNode.G > PERCEPTION_THRESHOLD)
+                    return false;
+
+                Tile adjTile;
+                Vector2 adjPosition;
+
+                adjPosition = new Vector2(currentNode.tile.Position.X - 1, currentNode.tile.Position.Y);
+                if(IsGridReachable(adjPosition))
+                {
+                    adjTile = TileMap.Tiles[(int)adjPosition.Y][(int)adjPosition.X];
+                        CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode, type));
+                }
+
+                adjPosition = new Vector2(currentNode.tile.Position.X + 1, currentNode.tile.Position.Y);
+                if (IsGridReachable(adjPosition))
+                {
+                    adjTile = TileMap.Tiles[(int)adjPosition.Y][(int)adjPosition.X];
+                    CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode, type));
+                }
+
+                adjPosition = new Vector2(currentNode.tile.Position.X, currentNode.tile.Position.Y - 1);
+                if (IsGridReachable(adjPosition))
+                {
+                    adjTile = TileMap.Tiles[(int)adjPosition.Y][(int)adjPosition.X];
+                    CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode, type));
+                }
+
+                adjPosition = new Vector2(currentNode.tile.Position.X, currentNode.tile.Position.Y + 1);
+                if (IsGridReachable(adjPosition))
+                {
+                    adjTile = TileMap.Tiles[(int)adjPosition.Y][(int)adjPosition.X];
+                    CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode, type));
+                }
+            }
+
+            return false;
         }
 
         public List<Tile> FindPath(Vector2 startPosition, Vector2 targetPosition)
         {
             Tile startTile = TileMap.Tiles[(int)startPosition.Y][(int)startPosition.X];
 
-            Node startNode = new Node(startTile, targetPosition, null);
-            
+            Node startNode = new Node(startTile, targetPosition, null, type);
+
             openList.Clear();
             closedList.Clear();
 
@@ -81,31 +154,31 @@ namespace FiniteStateMachine
                 Vector2 adjPosition;
 
                 adjPosition = new Vector2(currentNode.tile.Position.X - 1, currentNode.tile.Position.Y);
-                if(IsGridReachable(adjPosition))
+                if (IsGridReachable(adjPosition))
                 {
                     adjTile = TileMap.Tiles[(int)adjPosition.Y][(int)adjPosition.X];
-                        CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode));
+                    CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode, type));
                 }
 
                 adjPosition = new Vector2(currentNode.tile.Position.X + 1, currentNode.tile.Position.Y);
                 if (IsGridReachable(adjPosition))
                 {
                     adjTile = TileMap.Tiles[(int)adjPosition.Y][(int)adjPosition.X];
-                        CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode));
+                    CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode, type));
                 }
 
                 adjPosition = new Vector2(currentNode.tile.Position.X, currentNode.tile.Position.Y - 1);
                 if (IsGridReachable(adjPosition))
                 {
                     adjTile = TileMap.Tiles[(int)adjPosition.Y][(int)adjPosition.X];
-                        CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode));
+                    CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode, type));
                 }
 
                 adjPosition = new Vector2(currentNode.tile.Position.X, currentNode.tile.Position.Y + 1);
                 if (IsGridReachable(adjPosition))
                 {
                     adjTile = TileMap.Tiles[(int)adjPosition.Y][(int)adjPosition.X];
-                        CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode));
+                    CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode, type));
                 }
             }
 

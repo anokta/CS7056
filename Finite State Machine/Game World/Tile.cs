@@ -11,6 +11,7 @@ namespace FiniteStateMachine
     public class Tile
     {
         private static float[] TILE_COSTS = { 1.0f, 1.5f, 2.5f };
+        private static float[] TILE_ATTENUATION = { 2.0f, 3.5f, 2.5f };
  
         // tile id for the image offset
         private int tileID;
@@ -41,6 +42,13 @@ namespace FiniteStateMachine
             set { tileCost = value; }
         }
 
+        private float tileAttenuation;
+        public float TileAttenuation
+        {
+            get { return tileAttenuation; }
+            set { tileAttenuation = value; }
+        }
+
         // overlay
         private Color tintColor;
         public Color TintColor
@@ -63,6 +71,7 @@ namespace FiniteStateMachine
 
             tilePosition = position;
             tileCost = TILE_COSTS[tileID];
+            tileAttenuation = TILE_ATTENUATION[tileID];
             
             tintColor = Color.White;
             tintAlpha = 0.0f;

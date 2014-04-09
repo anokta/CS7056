@@ -29,7 +29,9 @@ namespace FiniteStateMachine
 
     public static class SenseEvent
     {
-        public static float SENSE_RANGE = 2.0f;
+        static AStar propogator = new AStar(AStar.SearchType.SensePropogation);
+
+        static float SENSE_RANGE = 4.0f;
 
         public static void UpdateSensors()
         {
@@ -38,13 +40,21 @@ namespace FiniteStateMachine
                 Agent a1 = AgentManager.GetAgent(i);
                 for (int j = 0; j < AgentManager.GetCount(); ++j)
                 {
-                    Agent a2 = AgentManager.GetAgent(j);
-
-                    if (Vector2.Distance(a1.CurrentPosition, a2.CurrentPosition) < SENSE_RANGE)
+                    if (i != j)
                     {
-                        // TODO : ASTAR STUFF
-                        Sense sense = new Sense(a2.Id, a1.Id, SenseType.Sight);
-                        a1.HandleSenseEvent(sense);
+                        Agent a2 = AgentManager.GetAgent(j);
+
+                        // If close enough
+                        if (Vector2.Distance(a1.CurrentPosition, a2.CurrentPosition) < SENSE_RANGE)
+                        {
+                            // Propogate the sense
+                            if (propogator.PropogateSense(a1.CurrentPosition, a2.CurrentPosition))
+                            {
+                                // Sense the agent
+                                Sense sense = new Sense(a2.Id, a1.Id, SenseType.Sight);
+                                a1.HandleSenseEvent(sense);
+                            }
+                        }
                     }
                 }
             }
