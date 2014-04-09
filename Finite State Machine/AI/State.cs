@@ -24,6 +24,9 @@ namespace FiniteStateMachine
 
         // This will be executed when the agent receives a message
         abstract public bool OnMesssage(T agent, Telegram telegram);
+
+        // This will be executed when the agent senses
+        abstract public bool OnSenseEvent(T agent, Sense sense);
     }
 
     abstract public class TravelToTarget<T> : State<T>

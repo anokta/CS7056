@@ -37,6 +37,11 @@ namespace FiniteStateMachine
         {
             return false;
         }
+
+        public override bool OnSenseEvent(Outlaw agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     public class LurkInCemetery : State<Outlaw>
@@ -69,6 +74,11 @@ namespace FiniteStateMachine
         {
             return false;
         }
+
+        public override bool OnSenseEvent(Outlaw agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     public class AttemptToRobBank : State<Outlaw>
@@ -97,6 +107,11 @@ namespace FiniteStateMachine
         {
             return false;
         }
+
+        public override bool OnSenseEvent(Outlaw agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     public class DropDeadOutlaw : State<Outlaw>
@@ -121,6 +136,11 @@ namespace FiniteStateMachine
         }
 
         public override bool OnMesssage(Outlaw agent, Telegram telegram)
+        {
+            return false;
+        }
+
+        public override bool OnSenseEvent(Outlaw agent, Sense sense)
         {
             return false;
         }
@@ -173,6 +193,11 @@ namespace FiniteStateMachine
         {
             return false;
         }
+
+        public override bool OnSenseEvent(Outlaw agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     // If the agent has a global state, then it is executed every Update() cycle
@@ -218,6 +243,11 @@ namespace FiniteStateMachine
                     outlaw.StateMachine.ChangeState(new LurkInOutlawCamp());
                     return true;
             }
+            return false;
+        }
+
+        public override bool OnSenseEvent(Outlaw agent, Sense sense)
+        {
             return false;
         }
     }

@@ -84,6 +84,12 @@ namespace FiniteStateMachine
         {
             return stateMachine.HandleMessage(telegram);
         }
+        
+        // This method is invoked when the agent senses
+        public override bool HandleSenseEvent(Sense sense)
+        {
+            return stateMachine.HandleSenseEvent(sense);
+        }
 
         // This method checks whether the agent's pockets are full or not, depending on the predefined level
         public Boolean PocketsFull()

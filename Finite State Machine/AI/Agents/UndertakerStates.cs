@@ -40,6 +40,11 @@ namespace FiniteStateMachine
                     return false;
             }
         }
+
+        public override bool OnSenseEvent(Undertaker agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     public class LookForDeadBodies : State<Undertaker>
@@ -79,6 +84,11 @@ namespace FiniteStateMachine
         {
             return false;
         }
+
+        public override bool OnSenseEvent(Undertaker agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     public class DragOffTheBody : State<Undertaker>
@@ -92,7 +102,7 @@ namespace FiniteStateMachine
         {
             Printer.Print(undertaker.Id, "Dragging the body off. . . R.I.P.");
 
-            Message.DispatchMessage(0, undertaker.Id, undertaker.CorpseID, MessageType.Respawn);
+            Message.DispatchMessage(10, undertaker.Id, undertaker.CorpseID, MessageType.Respawn);
             undertaker.CorpseID = -1;
 
             undertaker.StateMachine.ChangeState(new UndertakerTravelToTarget(Location.undertakers, new HoverInTheOffice()));
@@ -104,6 +114,11 @@ namespace FiniteStateMachine
         }
 
         public override bool OnMesssage(Undertaker undertaker, Telegram telegram)
+        {
+            return false;
+        }
+
+        public override bool OnSenseEvent(Undertaker agent, Sense sense)
         {
             return false;
         }
@@ -167,6 +182,11 @@ namespace FiniteStateMachine
         {
             return false;
         }
+
+        public override bool OnSenseEvent(Undertaker agent, Sense sense)
+        {
+            return false;
+        }
     }
 
 
@@ -198,6 +218,11 @@ namespace FiniteStateMachine
                 default:
                     return false;
             }
+        }
+
+        public override bool OnSenseEvent(Undertaker agent, Sense sense)
+        {
+            return false;
         }
     }
 }

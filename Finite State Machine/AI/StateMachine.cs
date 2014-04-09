@@ -82,6 +82,27 @@ namespace FiniteStateMachine
             return false;
         }
 
+        // Handle sense event
+        public bool HandleSenseEvent(Sense sense)
+        {
+            if (globalState != null)
+            {
+                if (globalState.OnSenseEvent(owner, sense))
+                {
+                    return true;
+                }
+
+            }
+            if (currentState != null)
+            {
+                if (currentState.OnSenseEvent(owner, sense))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         // Switch to a new state and save the old one, so we can revert to it later if it's a state blip
         public void ChangeState(State<T> newState)
         {

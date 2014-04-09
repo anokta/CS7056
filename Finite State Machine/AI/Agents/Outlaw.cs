@@ -38,15 +38,21 @@ namespace FiniteStateMachine
             stateMachine.Update();
         }
 
+        public Boolean Bored()
+        {
+            return (BoredomCountdown <= 0);
+        }
+
         // This method is invoked when the agent receives a message
         public override bool HandleMessage(Telegram telegram)
         {
             return stateMachine.HandleMessage(telegram);
         }
 
-        public Boolean Bored()
+        // This method is invoked when the agent senses
+        public override bool HandleSenseEvent(Sense sense)
         {
-            return (BoredomCountdown <= 0);
+            return stateMachine.HandleSenseEvent(sense);
         }
     }
 }

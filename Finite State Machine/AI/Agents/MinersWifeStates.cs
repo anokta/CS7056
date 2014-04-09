@@ -43,6 +43,11 @@ namespace FiniteStateMachine
         {
             return false;
         }
+
+        public override bool OnSenseEvent(MinersWife agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     // In this state, the MinersWife agent goes to the loo
@@ -65,6 +70,11 @@ namespace FiniteStateMachine
         }
 
         public override bool OnMesssage(MinersWife minersWife, Telegram telegram)
+        {
+            return false;
+        }
+
+        public override bool OnSenseEvent(MinersWife agent, Sense sense)
         {
             return false;
         }
@@ -113,6 +123,11 @@ namespace FiniteStateMachine
                     return false;
             }
         }
+
+        public override bool OnSenseEvent(MinersWife agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     // If the agent has a global state, then it is executed every Update() cycle
@@ -157,6 +172,11 @@ namespace FiniteStateMachine
                 default:
                     return false;
             }                 
+        }
+
+        public override bool OnSenseEvent(MinersWife agent, Sense sense)
+        {
+            return false;
         }
     }
 }

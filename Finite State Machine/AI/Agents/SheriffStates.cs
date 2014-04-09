@@ -13,34 +13,13 @@ namespace FiniteStateMachine
         public override void Enter(Sheriff sheriff)
         {
             Printer.Print(sheriff.Id, "Arrived!");
-         
+
             sheriff.OutlawSpotted = false;
         }
 
         public override void Execute(Sheriff sheriff)
         {
             Printer.Print(sheriff.Id, "Patrolling in " + LocationProperties.ToString(sheriff.Location) + ".");
-
-            if(sheriff.Location >= 0)
-            for (int i = 0; i < Agent.AgentsCount; ++i)
-            {
-                if ((i != sheriff.Id) && (sheriff.Location == AgentManager.GetAgent(i).Location))
-                {
-                    if (typeof(Outlaw) == AgentManager.GetAgent(i).GetType()) // outlaw spotted
-                    {
-                        Printer.Print(sheriff.Id, "Sure glad to see you bandit, but hand me those guns.");
-                        sheriff.OutlawSpotted = true;
-                    }
-                    else // greetings
-                    {
-                        Printer.Print(sheriff.Id, "Good day, townie!");
-                    }
-
-                    Message.DispatchMessage(0, sheriff.Id, i, MessageType.SheriffEncountered);
-
-                    if (sheriff.OutlawSpotted) break;
-                }
-            }
 
             if (!sheriff.OutlawSpotted)
             {
@@ -54,6 +33,11 @@ namespace FiniteStateMachine
         }
 
         public override bool OnMesssage(Sheriff agent, Telegram telegram)
+        {
+            return false;
+        }
+
+        public override bool OnSenseEvent(Sheriff sheriff, Sense sense)
         {
             return false;
         }
@@ -85,6 +69,11 @@ namespace FiniteStateMachine
         {
             return false;
         }
+
+        public override bool OnSenseEvent(Sheriff agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     // In this state, the sheriff goes to the bank and deposits gold
@@ -108,6 +97,11 @@ namespace FiniteStateMachine
         }
 
         public override bool OnMesssage(Sheriff agent, Telegram telegram)
+        {
+            return false;
+        }
+
+        public override bool OnSenseEvent(Sheriff agent, Sense sense)
         {
             return false;
         }
@@ -135,6 +129,11 @@ namespace FiniteStateMachine
         }
 
         public override bool OnMesssage(Sheriff agent, Telegram telegram)
+        {
+            return false;
+        }
+
+        public override bool OnSenseEvent(Sheriff agent, Sense sense)
         {
             return false;
         }
@@ -184,6 +183,11 @@ namespace FiniteStateMachine
         }
 
         public override bool OnMesssage(Sheriff agent, Telegram telegram)
+        {
+            return false;
+        }
+
+        public override bool OnSenseEvent(Sheriff agent, Sense sense)
         {
             return false;
         }
@@ -248,6 +252,24 @@ namespace FiniteStateMachine
                 default:
                     return false;
             }
+        }
+
+        public override bool OnSenseEvent(Sheriff sheriff, Sense sense)
+        {
+            if (typeof(Outlaw) == AgentManager.GetAgent(sense.Sender).GetType() && !AgentManager.GetAgent(sense.Sender).IsDead) // outlaw spotted
+            {
+                Printer.Print(sheriff.Id, "Sure glad to see you bandit, but hand me those guns.");
+                sheriff.OutlawSpotted = true;
+                Message.DispatchMessage(0, sheriff.Id, sense.Sender, MessageType.SheriffEncountered);
+            }
+            else // greetings
+            {
+                Printer.Print(sheriff.Id, "Good day, townie!");
+                Message.DispatchMessage(0, sheriff.Id, sense.Sender, MessageType.SheriffEncountered);
+            }
+
+
+            return true;
         }
     }
 }

@@ -72,5 +72,6 @@ namespace FiniteStateMachine
         // Any agent must implement these methods
         abstract public void Update();
         abstract public bool HandleMessage(Telegram telegram);
+        abstract public bool HandleSenseEvent(Sense sense);
     }
 }

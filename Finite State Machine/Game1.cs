@@ -35,7 +35,7 @@ namespace FiniteStateMachine
             Content.RootDirectory = "Content";
 
             this.IsFixedTimeStep = true;
-            this.TargetElapsedTime = TimeSpan.FromMilliseconds(60);
+            this.TargetElapsedTime = TimeSpan.FromMilliseconds(200);
         }
 
         /// <summary>
@@ -98,24 +98,26 @@ namespace FiniteStateMachine
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.P))
-                return;
-            countt = (countt + 1) % 2;
-            if (countt != 1) return;
-
             // Allows the game to exit
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.P))
+                return;
+            //countt = (countt + 1) % 2;
+            //if (countt != 1) return;
+
+
             Map.Update();
 
             Message.gameTime = gameTime;
+            SenseEvent.UpdateSensors();
             Bob.Update();
             Elsa.Update();
             Jesse.Update();
             Wyatt.Update();
             Ripp.Update();
-            //Message.SendDelayedMessages();
+            Message.SendDelayedMessages();
             base.Update(gameTime);
 
             //Printer.PrintMessageData("\n"); // Console.WriteLine("\n");

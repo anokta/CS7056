@@ -38,6 +38,11 @@ namespace FiniteStateMachine
         {
             return false;
         }
+
+        public override bool OnSenseEvent(Miner agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     // In this state, the miner goes to the bank and deposits gold
@@ -70,6 +75,11 @@ namespace FiniteStateMachine
         }
 
         public override bool OnMesssage(Miner agent, Telegram telegram)
+        {
+            return false;
+        }
+
+        public override bool OnSenseEvent(Miner agent, Sense sense)
         {
             return false;
         }
@@ -118,6 +128,11 @@ namespace FiniteStateMachine
                     return false;
             }
         }
+
+        public override bool OnSenseEvent(Miner agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     // In this state, the miner goes to the saloon to drink
@@ -146,6 +161,11 @@ namespace FiniteStateMachine
         {
             return false;
         }
+
+        public override bool OnSenseEvent(Miner agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     // In this state, the miner eats the food that Elsa has prepared
@@ -168,6 +188,11 @@ namespace FiniteStateMachine
         }
 
         public override bool OnMesssage(Miner agent, Telegram telegram)
+        {
+            return false;
+        }
+
+        public override bool OnSenseEvent(Miner agent, Sense sense)
         {
             return false;
         }
@@ -220,6 +245,11 @@ namespace FiniteStateMachine
         {
             return false;
         }
+
+        public override bool OnSenseEvent(Miner agent, Sense sense)
+        {
+            return false;
+        }
     }
 
     // If the agent has a global state, then it is executed every Update() cycle
@@ -250,6 +280,11 @@ namespace FiniteStateMachine
                 default:
                     return false;
             }
+        }
+
+        public override bool OnSenseEvent(Miner agent, Sense sense)
+        {
+            return false;
         }
     }
 }

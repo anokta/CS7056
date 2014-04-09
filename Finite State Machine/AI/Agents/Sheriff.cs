@@ -45,6 +45,12 @@ namespace FiniteStateMachine
         public override bool HandleMessage(Telegram telegram)
         {
             return stateMachine.HandleMessage(telegram);
+        }       
+        
+        // This method is invoked when the agent senses
+        public override bool HandleSenseEvent(Sense sense)
+        {
+            return stateMachine.HandleSenseEvent(sense);
         }
 
         static Random rand = new Random();

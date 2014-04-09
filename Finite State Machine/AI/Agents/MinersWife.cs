@@ -55,5 +55,11 @@ namespace FiniteStateMachine
         {
             return stateMachine.HandleMessage(telegram);    
         }
+
+        // This method is invoked when the agent senses
+        public override bool HandleSenseEvent(Sense sense)
+        {
+            return stateMachine.HandleSenseEvent(sense);
+        }
     }
 }
