@@ -35,26 +35,18 @@ namespace FiniteStateMachine
         }
 
         // The agent keeps track of its own location
-        private Location location;
-        public Location Location
-        {
-            get { return location; }
-            set { location = value; if((int)value >= 0) position = LocationProperties.LocationCoords[(int)location]; }
-        }
-
-        private Location targetLocation;
-        public Location TargetLocation
-        {
-            get { return targetLocation; }
-            set { targetLocation = value; }
-        }
-
         private Vector2 position;
         public Vector2 CurrentPosition
         {
             get { return position; }
             set { position = value; }
         }
+        public Location Location
+        {
+            get { return LocationProperties.GetLocation(position); }
+            set { position = LocationProperties.LocationCoords[(int)value]; }
+        }
+        
 
         // It also knows how much gold it's carrying
         protected int goldCarrying;

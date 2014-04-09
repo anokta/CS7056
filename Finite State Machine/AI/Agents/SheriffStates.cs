@@ -12,13 +12,8 @@ namespace FiniteStateMachine
 
         public override void Enter(Sheriff sheriff)
         {
-            Location nextLocation = sheriff.Location;
-            while (nextLocation == Location.outlawCamp || nextLocation == sheriff.Location)
-                nextLocation = (Location)rand.Next(Enum.GetNames(typeof(Location)).Length);
-
-            Printer.Print(sheriff.Id, "Going to " + LocationProperties.ToString(nextLocation) + "!");
-            sheriff.TargetLocation = nextLocation;
-
+            Printer.Print(sheriff.Id, "Arrived!");
+         
             sheriff.OutlawSpotted = false;
         }
 
@@ -49,7 +44,7 @@ namespace FiniteStateMachine
 
             if (!sheriff.OutlawSpotted)
             {
-                sheriff.StateMachine.ChangeState(new PatrolRandomLocation());
+                sheriff.StateMachine.ChangeState(new SheriffTravelToTarget(sheriff.ChooseNextLocation(), new PatrolRandomLocation()));
             }
         }
 
@@ -69,8 +64,7 @@ namespace FiniteStateMachine
     {
         public override void Enter(Sheriff sheriff)
         {
-            Printer.Print(sheriff.Id, "Going to the bank.");
-            sheriff.TargetLocation = Location.bank;
+            Printer.Print(sheriff.Id, "Arrived in bank.");
         }
 
         public override void Execute(Sheriff sheriff)
@@ -79,7 +73,7 @@ namespace FiniteStateMachine
             sheriff.GoldCarrying = 0;
             Printer.Print(sheriff.Id, "Depositing gold. Total savings now: " + sheriff.MoneyInBank);
 
-            sheriff.StateMachine.ChangeState(new CelebrateTheDayInSaloon());
+            sheriff.StateMachine.ChangeState(new SheriffTravelToTarget(Location.saloon, new CelebrateTheDayInSaloon()));
         }
 
         public override void Exit(Sheriff sheriff)
@@ -98,15 +92,14 @@ namespace FiniteStateMachine
     {
         public override void Enter(Sheriff sheriff)
         {
-            Printer.Print(sheriff.Id, "Going to the saloon!");
-            sheriff.TargetLocation = Location.saloon;
+            Printer.Print(sheriff.Id, "Arrived in the saloon!");
         }
 
         public override void Execute(Sheriff sheriff)
         {
             Printer.Print(sheriff.Id, "All drinks on me today!");
 
-            sheriff.StateMachine.ChangeState(new PatrolRandomLocation());
+            sheriff.StateMachine.ChangeState(new SheriffTravelToTarget(sheriff.ChooseNextLocation(), new PatrolRandomLocation()));
         }
 
         public override void Exit(Sheriff sheriff)
@@ -137,7 +130,7 @@ namespace FiniteStateMachine
         {
             sheriff.IsDead = false;
             sheriff.Location = Location.sheriffsOffice;
-            sheriff.TargetLocation = Location.sheriffsOffice;
+
             Printer.Print(sheriff.Id, "It's a miracle, I am alive!");
         }
 
@@ -147,25 +140,29 @@ namespace FiniteStateMachine
         }
     }
 
-    public class SheriffTravelToTarget : State<Sheriff>
+    public class SheriffTravelToTarget : TravelToTarget<Sheriff>
     {
-        private static AStar pathFinder = new AStar();
-        private List<Tile> path;
+        public SheriffTravelToTarget(Location target, State<Sheriff> state)
+        {
+            targetPosition = LocationProperties.LocationCoords[(int)target];
+            targetState = state;
+        }
 
         public override void Enter(Sheriff sheriff)
         {
-            path = pathFinder.FindPath(sheriff.CurrentPosition, LocationProperties.LocationCoords[(int)sheriff.TargetLocation]);
-            sheriff.Location = (Location)(-1);
+            path = pathFinder.FindPath(sheriff.CurrentPosition, targetPosition);
+
+            Printer.Print(sheriff.Id, "Walkin' to " + LocationProperties.ToString(LocationProperties.GetLocation(targetPosition)) + ".");
         }
 
         public override void Execute(Sheriff sheriff)
         {
             if (path.Count > 0)
             {
-                foreach (Tile tile in path)
+                for (int i = 0; i < path.Count; ++i)
                 {
-                    tile.TintColor = Color.Yellow;
-                    tile.TintAlpha = 0.5f;
+                    path[i].TintColor = Color.Yellow;
+                    path[i].TintAlpha = 0.5f;
                 }
 
                 sheriff.CurrentPosition = path[0].Position;
@@ -173,8 +170,11 @@ namespace FiniteStateMachine
             }
             else
             {
-                sheriff.Location = sheriff.TargetLocation;
-                sheriff.StateMachine.RevertToPreviousState();
+                sheriff.CurrentPosition = targetPosition;
+
+                State<Sheriff> previousState = sheriff.StateMachine.PreviousState;
+                sheriff.StateMachine.ChangeState(targetState);
+                sheriff.StateMachine.PreviousState = previousState;
             }
         }
 
@@ -200,11 +200,6 @@ namespace FiniteStateMachine
 
         public override void Execute(Sheriff sheriff)
         {
-            if (!sheriff.IsDead)
-            {
-                if (sheriff.Location != sheriff.TargetLocation && !sheriff.StateMachine.IsInState(new SheriffTravelToTarget()))
-                    sheriff.StateMachine.ChangeState(new SheriffTravelToTarget());
-            }
         }
 
         public override void Exit(Sheriff sheriff)
@@ -240,7 +235,7 @@ namespace FiniteStateMachine
 
                         Message.DispatchMessage(0, sheriff.Id, outlaw.Id, MessageType.Dead);
 
-                        sheriff.StateMachine.ChangeState(new StopByBankAndDepositGold());
+                        sheriff.StateMachine.ChangeState(new SheriffTravelToTarget(Location.bank, new StopByBankAndDepositGold()));
                     }
 
                     return true;
@@ -248,7 +243,7 @@ namespace FiniteStateMachine
                     sheriff.StateMachine.ChangeState(new DropDeadSheriff());
                     return true;
                 case MessageType.Respawn:
-                    sheriff.StateMachine.ChangeState(new PatrolRandomLocation());
+                    sheriff.StateMachine.ChangeState(new SheriffTravelToTarget(sheriff.ChooseNextLocation(), new PatrolRandomLocation()));
                     return true;
                 default:
                     return false;

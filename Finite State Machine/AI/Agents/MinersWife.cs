@@ -40,6 +40,7 @@ namespace FiniteStateMachine
             stateMachine.CurrentState = new DoHouseWork();
             stateMachine.GlobalState = new WifesGlobalState();
             husbandId = this.Id - 1;  // hack hack
+
             Location = Location.shack;
         }
 

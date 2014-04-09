@@ -13,8 +13,7 @@ namespace FiniteStateMachine
 
         public override void Enter(Undertaker undertaker)
         {
-            Printer.Print(undertaker.Id, "Going back to the office!");
-            undertaker.TargetLocation = Location.undertakers;
+            Printer.Print(undertaker.Id, "Arrived in the office!");
         }
 
         public override void Execute(Undertaker undertaker)
@@ -33,8 +32,8 @@ namespace FiniteStateMachine
             {
                 case MessageType.Gunfight:
                     Printer.Print(undertaker.Id, "Let's get down to business!");
-                    undertaker.TargetLocation = AgentManager.GetAgent(telegram.Sender).Location;
-                    undertaker.StateMachine.ChangeState(new LookForDeadBodies());
+
+                    undertaker.StateMachine.ChangeState(new UndertakerTravelToTarget(AgentManager.GetAgent(telegram.Sender).CurrentPosition, new LookForDeadBodies()));
 
                     return true;
                 default:
@@ -64,7 +63,7 @@ namespace FiniteStateMachine
 
             if (undertaker.CorpseID >= 0)
             {
-                undertaker.StateMachine.ChangeState(new DragOffTheBody());
+                undertaker.StateMachine.ChangeState(new UndertakerTravelToTarget(Location.cemetery, new DragOffTheBody()));
             }
         }
 
@@ -87,8 +86,6 @@ namespace FiniteStateMachine
         public override void Enter(Undertaker undertaker)
         {
             Printer.Print(undertaker.Id, "Carrying the body to the tombs in the cemetery!");
-            undertaker.TargetLocation = Location.cemetery;
-            AgentManager.GetAgent(undertaker.CorpseID).Location = Location.cemetery;
         }
 
         public override void Execute(Undertaker undertaker)
@@ -97,7 +94,7 @@ namespace FiniteStateMachine
 
             Message.DispatchMessage(2, undertaker.Id, undertaker.CorpseID, MessageType.Respawn);
 
-            undertaker.StateMachine.ChangeState(new HoverInTheOffice());
+            undertaker.StateMachine.ChangeState(new UndertakerTravelToTarget(Location.undertakers, new HoverInTheOffice()));
         }
 
         public override void Exit(Undertaker undertaker)
@@ -111,25 +108,35 @@ namespace FiniteStateMachine
         }
     }
 
-    public class UndertakerTravelToTarget : State<Undertaker>
+    public class UndertakerTravelToTarget : TravelToTarget<Undertaker>
     {
-        private static AStar pathFinder = new AStar();
-        private List<Tile> path;
+        public UndertakerTravelToTarget(Location target, State<Undertaker> state)
+        {
+            targetPosition = LocationProperties.LocationCoords[(int)target];
+            targetState = state;
+        }
+
+        public UndertakerTravelToTarget(Vector2 target, State<Undertaker> state)
+        {
+            targetPosition = target;
+            targetState = state;
+        }
 
         public override void Enter(Undertaker undertaker)
         {
-            path = pathFinder.FindPath(undertaker.CurrentPosition, LocationProperties.LocationCoords[(int)undertaker.TargetLocation]);
-            undertaker.Location = (Location)(-1);
+            path = pathFinder.FindPath(undertaker.CurrentPosition, targetPosition);
+
+            Printer.Print(undertaker.Id, "Walkin' to " + LocationProperties.ToString(LocationProperties.GetLocation(targetPosition)) + ".");
         }
 
         public override void Execute(Undertaker undertaker)
         {
             if (path.Count > 0)
             {
-                foreach (Tile tile in path)
+                for (int i = 0; i < path.Count; ++i)
                 {
-                    tile.TintColor = Color.Black;
-                    tile.TintAlpha = 0.5f;
+                    path[i].TintColor = Color.Black;
+                    path[i].TintAlpha = 0.5f;
                 }
 
                 undertaker.CurrentPosition = path[0].Position;
@@ -137,8 +144,16 @@ namespace FiniteStateMachine
             }
             else
             {
-                undertaker.Location = undertaker.TargetLocation;
-                undertaker.StateMachine.RevertToPreviousState();
+                undertaker.CurrentPosition = targetPosition;
+
+                State<Undertaker> previousState = undertaker.StateMachine.PreviousState;
+                undertaker.StateMachine.ChangeState(targetState);
+                undertaker.StateMachine.PreviousState = previousState;
+            }
+
+            if (undertaker.CorpseID >= 0)
+            {
+                AgentManager.GetAgent(undertaker.CorpseID).CurrentPosition = undertaker.CurrentPosition;
             }
         }
 

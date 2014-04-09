@@ -33,7 +33,6 @@ namespace FiniteStateMachine
             stateMachine.GlobalState = new SheriffGlobalState();
 
             Location = Location.sheriffsOffice;
-            TargetLocation = Location.sheriffsOffice;
         }
 
         // This method is invoked by the Game object as a result of XNA updates 
@@ -46,6 +45,16 @@ namespace FiniteStateMachine
         public override bool HandleMessage(Telegram telegram)
         {
             return stateMachine.HandleMessage(telegram);
+        }
+
+        static Random rand = new Random();
+        public Location ChooseNextLocation()
+        {
+            Location nextLocation = Location;
+            while (nextLocation == Location.outlawCamp || nextLocation == Location)
+                nextLocation = (Location)rand.Next(Enum.GetNames(typeof(Location)).Length);
+
+            return nextLocation;
         }
     }
 }

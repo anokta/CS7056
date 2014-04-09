@@ -35,7 +35,7 @@ namespace FiniteStateMachine
             Content.RootDirectory = "Content";
 
             this.IsFixedTimeStep = true;
-            this.TargetElapsedTime = TimeSpan.FromMilliseconds(50);
+            this.TargetElapsedTime = TimeSpan.FromMilliseconds(60);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace FiniteStateMachine
         {
             if (Keyboard.GetState().IsKeyDown(Keys.P))
                 return;
-            countt = (countt + 1) % 10;
+            countt = (countt + 1) % 2;
             if (countt != 1) return;
 
             // Allows the game to exit
@@ -110,11 +110,11 @@ namespace FiniteStateMachine
             Map.Update();
 
             Message.gameTime = gameTime;
-            //Bob.Update();
-            //Elsa.Update();
+            Bob.Update();
+            Elsa.Update();
             Jesse.Update();
-            //Wyatt.Update();
-            //Ripp.Update();
+            Wyatt.Update();
+            Ripp.Update();
             //Message.SendDelayedMessages();
             base.Update(gameTime);
 

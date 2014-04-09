@@ -61,13 +61,12 @@ namespace FiniteStateMachine
         public Miner()
             : base()
         {
-            Location = Location.shack;
-            TargetLocation = Location.shack;
-
             stateMachine = new StateMachine<Miner>(this);
             stateMachine.CurrentState = new GoHomeAndSleepTillRested();
             stateMachine.GlobalState = new MinerGlobalState();
             wifeId = this.Id + 1;  // hack hack
+
+            Location = Location.shack;
         }
 
         // This method is invoked by the Game object as a result of XNA updates 

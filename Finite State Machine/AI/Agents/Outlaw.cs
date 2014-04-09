@@ -25,7 +25,6 @@ namespace FiniteStateMachine
             stateMachine.GlobalState = new OutlawGlobalState();
 
             Location = Location.outlawCamp;
-            TargetLocation = Location.outlawCamp;
         }
 
         // This method is invoked by the Game object as a result of XNA updates 

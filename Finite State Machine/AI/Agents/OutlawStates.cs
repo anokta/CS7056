@@ -13,8 +13,7 @@ namespace FiniteStateMachine
 
         public override void Enter(Outlaw outlaw)
         {
-            outlaw.TargetLocation = Location.outlawCamp;
-            Printer.Print(outlaw.Id, "Going back home, sweet home!");
+            Printer.Print(outlaw.Id, "Back home, sweet home!");
 
             outlaw.BoredomCountdown = rand.Next(1, 10);
         }
@@ -25,7 +24,7 @@ namespace FiniteStateMachine
 
             if (outlaw.Bored())
             {
-                outlaw.StateMachine.ChangeState(new LurkInCemetery());
+                outlaw.StateMachine.ChangeState(new OutlawTravelToTarget(Location.cemetery, new LurkInCemetery()));
             }
         }
 
@@ -46,8 +45,7 @@ namespace FiniteStateMachine
 
         public override void Enter(Outlaw outlaw)
         {
-            Printer.Print(outlaw.Id, "Going to the cemetery!");
-            outlaw.TargetLocation = Location.cemetery;
+            Printer.Print(outlaw.Id, "Arrived in the cemetery!");
 
             outlaw.BoredomCountdown = rand.Next(1, 10);
         }
@@ -58,7 +56,7 @@ namespace FiniteStateMachine
 
             if (outlaw.Bored())
             {
-                outlaw.StateMachine.ChangeState(new LurkInOutlawCamp());
+                outlaw.StateMachine.ChangeState(new OutlawTravelToTarget(Location.outlawCamp, new LurkInOutlawCamp()));
             }
         }
 
@@ -79,8 +77,7 @@ namespace FiniteStateMachine
 
         public override void Enter(Outlaw outlaw)
         {
-            Printer.Print(outlaw.Id, "Going to the bank, Let's EARN some money!");
-            outlaw.TargetLocation = Location.bank;
+            Printer.Print(outlaw.Id, "Arrived in bank, Let's EARN some money!");
         }
 
         public override void Execute(Outlaw outlaw)
@@ -88,7 +85,7 @@ namespace FiniteStateMachine
             outlaw.GoldCarrying += rand.Next(1, 10);
             Printer.Print(outlaw.Id, "Total harvest now: " + outlaw.GoldCarrying);
 
-            outlaw.StateMachine.RevertToPreviousState();
+            outlaw.StateMachine.ChangeState(new OutlawTravelToTarget(outlaw.StateMachine.PreviousState.GetType() == typeof(LurkInOutlawCamp) ? Location.outlawCamp : Location.cemetery, outlaw.StateMachine.PreviousState));
         }
 
         public override void Exit(Outlaw outlaw)
@@ -119,7 +116,7 @@ namespace FiniteStateMachine
         {
             outlaw.IsDead = false;
             outlaw.Location = Location.outlawCamp;
-            outlaw.TargetLocation = Location.outlawCamp;
+
             Printer.Print(outlaw.Id, "I am back, from dead!");
         }
 
@@ -129,25 +126,29 @@ namespace FiniteStateMachine
         }
     }
 
-    public class OutlawTravelToTarget : State<Outlaw>
+    public class OutlawTravelToTarget : TravelToTarget<Outlaw>
     {
-        private static AStar pathFinder = new AStar();
-        private List<Tile> path;
+        public OutlawTravelToTarget(Location target, State<Outlaw> state)
+        {
+            targetPosition = LocationProperties.LocationCoords[(int)target];
+            targetState = state;
+        }
 
         public override void Enter(Outlaw outlaw)
         {
-            path = pathFinder.FindPath(outlaw.CurrentPosition, LocationProperties.LocationCoords[(int)outlaw.TargetLocation]);
-            outlaw.Location = (Location)(-1);
+            path = pathFinder.FindPath(outlaw.CurrentPosition, targetPosition);
+
+            Printer.Print(outlaw.Id, "Walkin' to " + LocationProperties.ToString(LocationProperties.GetLocation(targetPosition)) + ".");
         }
 
         public override void Execute(Outlaw outlaw)
         {
             if (path.Count > 0)
             {
-                foreach (Tile tile in path)
+                for (int i = 0; i < path.Count; ++i)
                 {
-                    tile.TintColor = Color.Red;
-                    tile.TintAlpha = 0.5f;
+                    path[i].TintColor = Color.Red;
+                    path[i].TintAlpha = 0.5f;
                 }
 
                 outlaw.CurrentPosition = path[0].Position;
@@ -155,8 +156,11 @@ namespace FiniteStateMachine
             }
             else
             {
-                outlaw.Location = outlaw.TargetLocation;
-                outlaw.StateMachine.RevertToPreviousState();
+                outlaw.CurrentPosition = targetPosition;
+
+                State<Outlaw> previousState = outlaw.StateMachine.PreviousState;
+                outlaw.StateMachine.ChangeState(targetState);
+                outlaw.StateMachine.PreviousState = previousState;
             }
         }
 
@@ -184,14 +188,11 @@ namespace FiniteStateMachine
         {
             if (!outlaw.IsDead)
             {
-                if (!outlaw.StateMachine.IsInState(new OutlawTravelToTarget()))
+                if (outlaw.StateMachine.CurrentState.GetType() != typeof(OutlawTravelToTarget))
                 {
-                    if (outlaw.Location != outlaw.TargetLocation)
-                        outlaw.StateMachine.ChangeState(new OutlawTravelToTarget());
-
-                    else if (rand.Next(20) == 1 && !outlaw.StateMachine.IsInState(new AttemptToRobBank()))
+                    if (rand.Next(20) == 1 && !outlaw.StateMachine.IsInState(new AttemptToRobBank()))
                     {
-                        outlaw.StateMachine.ChangeState(new AttemptToRobBank());
+                        outlaw.StateMachine.ChangeState(new OutlawTravelToTarget(Location.bank, new AttemptToRobBank()));
                     }
                 }
             }

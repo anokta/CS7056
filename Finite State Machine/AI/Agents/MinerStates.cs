@@ -11,8 +11,7 @@ namespace FiniteStateMachine
     {
         public override void Enter(Miner miner)
         {
-            Printer.Print(miner.Id, "Walkin' to the goldmine");
-            miner.TargetLocation = Location.goldMine;
+            Printer.Print(miner.Id, "Arrived in the goldmine");
         }
 
         public override void Execute(Miner miner)
@@ -22,11 +21,11 @@ namespace FiniteStateMachine
             Printer.Print(miner.Id, "Pickin' up a nugget");
             if (miner.PocketsFull())
             {
-                miner.StateMachine.ChangeState(new VisitBankAndDepositGold());
+                miner.StateMachine.ChangeState(new MinerTravelToTarget(Location.bank, new VisitBankAndDepositGold()));
             }
             if (miner.Thirsty())
             {
-                miner.StateMachine.ChangeState(new QuenchThirst());
+                miner.StateMachine.ChangeState(new MinerTravelToTarget(Location.saloon, new QuenchThirst()));
             }
         }
 
@@ -46,8 +45,7 @@ namespace FiniteStateMachine
     {
         public override void Enter(Miner miner)
         {
-            Printer.Print(miner.Id, "Goin' to the bank. Yes siree");
-            miner.TargetLocation = Location.bank;
+            Printer.Print(miner.Id, "Here is the bank. Yes siree");
         }
 
         public override void Execute(Miner miner)
@@ -58,11 +56,11 @@ namespace FiniteStateMachine
             if (miner.Rich())
             {
                 Printer.Print(miner.Id, "WooHoo! Rich enough for now. Back home to mah li'lle lady");
-                miner.StateMachine.ChangeState(new GoHomeAndSleepTillRested());
+                miner.StateMachine.ChangeState(new MinerTravelToTarget(Location.shack, new GoHomeAndSleepTillRested()));
             }
             else
             {
-                miner.StateMachine.ChangeState(new EnterMineAndDigForNugget());
+                miner.StateMachine.ChangeState(new MinerTravelToTarget(Location.goldMine, new EnterMineAndDigForNugget()));
             }
         }
 
@@ -82,8 +80,7 @@ namespace FiniteStateMachine
     {
         public override void Enter(Miner miner)
         {
-            Printer.Print(miner.Id, "Walkin' Home");
-            miner.TargetLocation = Location.shack;
+            Printer.Print(miner.Id, "Arrived Home");
             Message.DispatchMessage(0, miner.Id, miner.WifeId, MessageType.HiHoneyImHome);
         }
 
@@ -92,7 +89,7 @@ namespace FiniteStateMachine
             if (miner.HowFatigued < miner.TirednessThreshold)
             {
                 Printer.Print(miner.Id, "All mah fatigue has drained away. Time to find more gold!");
-                miner.StateMachine.ChangeState(new EnterMineAndDigForNugget());
+                miner.StateMachine.ChangeState(new MinerTravelToTarget(Location.goldMine, new EnterMineAndDigForNugget()));
             }
             else
             {
@@ -128,11 +125,7 @@ namespace FiniteStateMachine
     {
         public override void Enter(Miner miner)
         {
-            if (miner.Location != Location.saloon)
-            {
-                Printer.Print(miner.Id, "Boy, ah sure is thusty! Walking to the saloon");
-                miner.TargetLocation = Location.saloon;
-            }
+            Printer.Print(miner.Id, "Boy, ah sure is thusty! Arrived the saloon");
         }
 
         public override void Execute(Miner miner)
@@ -141,7 +134,7 @@ namespace FiniteStateMachine
             miner.HowThirsty = 0;
             miner.MoneyInBank -= 2;
             Printer.Print(miner.Id, "That's mighty fine sippin' liquer");
-            miner.StateMachine.ChangeState(new EnterMineAndDigForNugget());
+            miner.StateMachine.ChangeState(new MinerTravelToTarget(Location.goldMine, new EnterMineAndDigForNugget()));
         }
 
         public override void Exit(Miner miner)
@@ -180,25 +173,32 @@ namespace FiniteStateMachine
         }
     }
 
-    public class MinerTravelToTarget : State<Miner>
+    public class MinerTravelToTarget : TravelToTarget<Miner>
     {
-        private static AStar pathFinder = new AStar();
-        private List<Tile> path;
+        public MinerTravelToTarget(Location target, State<Miner> state)
+        {
+            targetPosition = LocationProperties.LocationCoords[(int)target];
+            targetState = state;
+        }
 
         public override void Enter(Miner miner)
         {
-            path = pathFinder.FindPath(miner.CurrentPosition, LocationProperties.LocationCoords[(int)miner.TargetLocation]);
-            miner.Location = (Location)(-1);
+            path = pathFinder.FindPath(miner.CurrentPosition, targetPosition);
+
+            Printer.Print(miner.Id, "Walkin' to " + LocationProperties.ToString(LocationProperties.GetLocation(targetPosition)) + ".");
         }
 
         public override void Execute(Miner miner)
         {
+
+            Printer.Print(99, "Path count: " + path.Count);
+
             if (path.Count > 0)
             {
-                foreach (Tile tile in path)
+                for (int i = 0; i < path.Count; ++i )
                 {
-                    tile.TintColor = Color.Blue;
-                    tile.TintAlpha = 0.5f;
+                    path[i].TintColor = Color.Blue;
+                    path[i].TintAlpha = 0.5f;
                 }
 
                 miner.CurrentPosition = path[0].Position;
@@ -206,8 +206,11 @@ namespace FiniteStateMachine
             }
             else
             {
-                miner.Location = miner.TargetLocation;
-                miner.StateMachine.RevertToPreviousState();
+                miner.CurrentPosition = targetPosition;
+
+                State<Miner> previousState = miner.StateMachine.PreviousState;
+                miner.StateMachine.ChangeState(targetState);
+                miner.StateMachine.PreviousState = previousState;
             }
         }
 
@@ -232,8 +235,6 @@ namespace FiniteStateMachine
 
         public override void Execute(Miner miner)
         {
-            if (miner.Location != miner.TargetLocation && !miner.StateMachine.IsInState(new MinerTravelToTarget()))
-                miner.StateMachine.ChangeState(new MinerTravelToTarget());
         }
 
         public override void Exit(Miner miner)
