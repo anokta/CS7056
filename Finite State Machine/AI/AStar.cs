@@ -155,7 +155,7 @@ namespace FiniteStateMachine
                 // Target reached?
                 if (currentNode.tile.Position == targetPosition)
                     return GetPathPositions(currentNode);
-                else if (closedList.Count > 200)
+                else if (closedList.Count > 500) // just in case (avoid infinite loop)
                     break;
 
                 // Check adjacent nodes
