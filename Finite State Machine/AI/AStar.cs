@@ -9,12 +9,12 @@ namespace FiniteStateMachine
 {
     public class AStar
     {
-        public enum SearchType { ShortestPath, SensePropogation }; 
+        public enum SearchType { ShortestPath, SensePropogation };
         SearchType type;
-        
+
         private float PERCEPTION_THRESHOLD = 6.0f;
 
-        /* Generic Node class to be used in AStar */
+        // Generic Node class to be used in AStar
         private class Node
         {
             public Tile tile;
@@ -54,12 +54,13 @@ namespace FiniteStateMachine
             type = searchType;
         }
 
+        // Sense propogation using attenuation properties of the tiles
         public bool PropogateSense(Vector2 startPosition, Vector2 targetPosition)
         {
             Tile startTile = TileMap.Tiles[(int)startPosition.Y][(int)startPosition.X];
 
             Node startNode = new Node(startTile, targetPosition, null, type);
-            
+
             openList.Clear();
             closedList.Clear();
 
@@ -81,19 +82,21 @@ namespace FiniteStateMachine
                 closedList.Add(currentNode);
                 openList.Remove(currentNode);
 
+                // Target reached?
                 if (currentNode.tile.Position == targetPosition)
                     return true;
-                else if(currentNode.G > PERCEPTION_THRESHOLD)
+                else if (currentNode.G > PERCEPTION_THRESHOLD) // Target out of perception?
                     return false;
 
+                // Check adjacent nodes
                 Tile adjTile;
                 Vector2 adjPosition;
 
                 adjPosition = new Vector2(currentNode.tile.Position.X - 1, currentNode.tile.Position.Y);
-                if(IsGridReachable(adjPosition))
+                if (IsGridReachable(adjPosition))
                 {
                     adjTile = TileMap.Tiles[(int)adjPosition.Y][(int)adjPosition.X];
-                        CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode, type));
+                    CheckAdjacentNode(new Node(adjTile, targetPosition, currentNode, type));
                 }
 
                 adjPosition = new Vector2(currentNode.tile.Position.X + 1, currentNode.tile.Position.Y);
@@ -121,6 +124,7 @@ namespace FiniteStateMachine
             return false;
         }
 
+        // Finds the shortest path with respect to the given tile costs
         public List<Tile> FindPath(Vector2 startPosition, Vector2 targetPosition)
         {
             Tile startTile = TileMap.Tiles[(int)startPosition.Y][(int)startPosition.X];
@@ -148,11 +152,13 @@ namespace FiniteStateMachine
                 closedList.Add(currentNode);
                 openList.Remove(currentNode);
 
+                // Target reached?
                 if (currentNode.tile.Position == targetPosition)
                     return GetPathPositions(currentNode);
                 else if (closedList.Count > 200)
                     break;
 
+                // Check adjacent nodes
                 Tile adjTile;
                 Vector2 adjPosition;
 
@@ -188,6 +194,7 @@ namespace FiniteStateMachine
             return GetPathPositions(closedList[closedList.Count - 1]);
         }
 
+        // Checks if the adjacent node is proper
         void CheckAdjacentNode(Node adjNode)
         {
             bool flag = true;
@@ -220,6 +227,7 @@ namespace FiniteStateMachine
             }
         }
 
+        // Checks map boundaries
         bool IsGridReachable(Vector2 p)
         {
             int x = (int)p.X;
@@ -227,6 +235,7 @@ namespace FiniteStateMachine
             return (x >= 0 && x < TileMap.Width && y >= 0 && y < TileMap.Height);
         }
 
+        // Returns the shortest path as a list
         List<Tile> GetPathPositions(Node node)
         {
             List<Tile> positions = new List<Tile>();

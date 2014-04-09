@@ -29,6 +29,7 @@ namespace FiniteStateMachine
         abstract public bool OnSenseEvent(T agent, Sense sense);
     }
 
+    // Template class to represent the walking state between the locations
     abstract public class TravelToTarget<T> : State<T>
     {
         protected static AStar pathFinder = new AStar();

@@ -35,6 +35,7 @@ namespace FiniteStateMachine
 
         public static void UpdateSensors()
         {
+            // Agents pairwise check
             for (int i = 0; i < AgentManager.GetCount(); ++i)
             {
                 Agent a1 = AgentManager.GetAgent(i);

@@ -27,6 +27,7 @@ namespace FiniteStateMachine
             set { id = value; }
         }
 
+        // Agents can die now
         private bool isDead;
         public bool IsDead
         {
@@ -34,7 +35,7 @@ namespace FiniteStateMachine
             set { isDead = value; }
         }
 
-        // The agent keeps track of its own location
+        // The agent keeps track of its own position
         private Vector2 position;
         public Vector2 CurrentPosition
         {
@@ -56,17 +57,9 @@ namespace FiniteStateMachine
             set { goldCarrying = value; }
         }
 
-        //private Texture2D sprite;
-        //public Texture2D Sprite
-        //{
-        //    get { return sprite; }
-        //    set { sprite = value; }
-        //}
-
-        public Agent()//Texture2D sprite)
+        public Agent()
         {
             id = agents++;
-           // this.sprite = sprite;
         }
 
         // Any agent must implement these methods
