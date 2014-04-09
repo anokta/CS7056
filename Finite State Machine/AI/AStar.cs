@@ -14,6 +14,7 @@ namespace FiniteStateMachine
         
         private float PERCEPTION_THRESHOLD = 6.0f;
 
+        /* Generic Node class to be used in AStar */
         private class Node
         {
             public Tile tile;
@@ -149,6 +150,8 @@ namespace FiniteStateMachine
 
                 if (currentNode.tile.Position == targetPosition)
                     return GetPathPositions(currentNode);
+                else if (closedList.Count > 200)
+                    break;
 
                 Tile adjTile;
                 Vector2 adjPosition;

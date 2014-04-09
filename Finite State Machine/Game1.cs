@@ -30,8 +30,8 @@ namespace FiniteStateMachine
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1024;
-            graphics.PreferredBackBufferHeight = 768;
+            graphics.PreferredBackBufferWidth = 1200;
+            graphics.PreferredBackBufferHeight = 900;
             Content.RootDirectory = "Content";
 
             this.IsFixedTimeStep = true;
@@ -90,7 +90,6 @@ namespace FiniteStateMachine
             // TODO: Unload any non ContentManager content here
         }
 
-        int countt = 0;
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -104,25 +103,21 @@ namespace FiniteStateMachine
 
             if (Keyboard.GetState().IsKeyDown(Keys.P))
                 return;
-            //countt = (countt + 1) % 2;
-            //if (countt != 1) return;
-
 
             Map.Update();
 
             Message.gameTime = gameTime;
             SenseEvent.UpdateSensors();
+
             Bob.Update();
             Elsa.Update();
             Jesse.Update();
             Wyatt.Update();
             Ripp.Update();
+            
             Message.SendDelayedMessages();
+            
             base.Update(gameTime);
-
-            //Printer.PrintMessageData("\n"); // Console.WriteLine("\n");
-
-            //Console.WriteLine("\n");
         }
 
         /// <summary>

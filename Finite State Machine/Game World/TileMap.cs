@@ -33,7 +33,7 @@ namespace FiniteStateMachine
 
         private static Random rand = new Random();
 
-        public TileMap(int mapcols = 19, int maprows = 13, int tileSize = 48)
+        public TileMap(int mapcols = 25, int maprows = 19, int tileSize = 48)
         {
             mapCols = mapcols;
             mapRows = maprows;
