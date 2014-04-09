@@ -243,7 +243,7 @@ namespace FiniteStateMachine
                     sheriff.StateMachine.ChangeState(new DropDeadSheriff());
                     return true;
                 case MessageType.Respawn:
-                    sheriff.StateMachine.ChangeState(new SheriffTravelToTarget(sheriff.ChooseNextLocation(), new PatrolRandomLocation()));
+                    sheriff.StateMachine.ChangeState(new PatrolRandomLocation());
                     return true;
                 default:
                     return false;

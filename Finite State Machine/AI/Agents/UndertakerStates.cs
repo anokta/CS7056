@@ -92,7 +92,8 @@ namespace FiniteStateMachine
         {
             Printer.Print(undertaker.Id, "Dragging the body off. . . R.I.P.");
 
-            Message.DispatchMessage(2, undertaker.Id, undertaker.CorpseID, MessageType.Respawn);
+            Message.DispatchMessage(0, undertaker.Id, undertaker.CorpseID, MessageType.Respawn);
+            undertaker.CorpseID = -1;
 
             undertaker.StateMachine.ChangeState(new UndertakerTravelToTarget(Location.undertakers, new HoverInTheOffice()));
         }

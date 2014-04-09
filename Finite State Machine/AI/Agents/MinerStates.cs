@@ -190,9 +190,6 @@ namespace FiniteStateMachine
 
         public override void Execute(Miner miner)
         {
-
-            Printer.Print(99, "Path count: " + path.Count);
-
             if (path.Count > 0)
             {
                 for (int i = 0; i < path.Count; ++i )

@@ -204,6 +204,7 @@ namespace FiniteStateMachine
 
         public override bool OnMesssage(Outlaw outlaw, Telegram telegram)
         {
+
             switch (telegram.messageType)
             {
                 case MessageType.SheriffEncountered:
